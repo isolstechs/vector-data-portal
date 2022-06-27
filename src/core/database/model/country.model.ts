@@ -1,6 +1,5 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { DataModel } from './data.model';
-import { OperatorModel } from './operator.model';
+import { PrefixModel } from './prefix.model';
 
 @Table({ modelName: 'country' })
 export class CountryModel extends Model {
@@ -16,18 +15,12 @@ export class CountryModel extends Model {
   @Column(DataType.STRING)
   name: string;
 
-  @Column(DataType.STRING)
-  prefix: string;
+  @Column(DataType.INTEGER)
+  code: number;
 
-  // relationship with OperatorModel
-  @HasMany(() => OperatorModel, {
+  // relationship with PrefixModel
+  @HasMany(() => PrefixModel, {
     foreignKey: { allowNull: false },
   })
-  operators: OperatorModel[];
-
-  // relationship with DataModel
-  @HasMany(() => DataModel, {
-    foreignKey: { allowNull: false },
-  })
-  data: DataModel[];
+  prefix: PrefixModel[];
 }

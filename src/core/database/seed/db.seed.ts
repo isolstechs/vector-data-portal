@@ -1,24 +1,47 @@
+import { UpdatedCodeList } from './updated-codes-list';
 import { CountryModel } from '../model/country.model';
 import { OperatorModel } from '../model/operator.model';
-import { Countries } from './countries';
-import { Operators } from './temp-operators';
+import { PrefixModel } from '../model/prefix.model';
+import * as _ from 'lodash';
 
 export const seed = async () => {
-  let operators: any = Operators;
+  let promiseArray = [];
+  let updatedCodeList: any = UpdatedCodeList;
+  let countries = [];
+  let operators = [];
+  let prefix = [];
 
-  const countries = await CountryModel.bulkCreate(Countries);
-  countries.forEach((_c) => {
-    const tempOperators = operators.filter((_o) =>
-      _o.prefix.slice(0, _c.prefix.length).includes(_c.prefix),
-    );
-    tempOperators.map((_to) => {
-      if (!_to.countryId) {
-        _to.countryId = _c.id;
-      }
-    });
+  // Separating countries and operators
+  updatedCodeList.forEach((_ucl) => {
+    if (_ucl.country == _ucl.operator) {
+      countries.push({ name: _ucl.country, code: _ucl.prefix });
+    } else {
+      operators.push({ name: _ucl.operator });
+    }
   });
 
-  await OperatorModel.bulkCreate(operators.slice(0, 20000));
-  await OperatorModel.bulkCreate(operators.slice(20001, 40000));
-  await OperatorModel.bulkCreate(operators.slice(40001, 55580));
+  operators = _.sortBy(_.uniqBy(operators, 'name'), 'name');
+  countries = _.sortBy(_.uniqBy(countries, 'name'), 'name');
+
+  // getting countries and operators with ids
+  countries = await CountryModel.bulkCreate(countries);
+  operators = await OperatorModel.bulkCreate(operators);
+
+  // saving prefix
+  updatedCodeList.forEach((_ucl) => {
+    if (_ucl.country != _ucl.operator) {
+      const country = countries.find((_c) => _c.name == _ucl.country);
+      const operator = operators.find((_c) => _c.name == _ucl.operator);
+      prefix.push({
+        code: _ucl.prefix,
+        countryId: country?.id,
+        operatorId: operator?.id,
+      });
+    }
+  });
+
+  promiseArray.push(PrefixModel.bulkCreate(prefix.slice(0, 20000)));
+  promiseArray.push(PrefixModel.bulkCreate(prefix.slice(20001, 40000)));
+  promiseArray.push(PrefixModel.bulkCreate(prefix.slice(40001)));
+  await Promise.all(promiseArray);
 };

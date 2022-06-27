@@ -3,8 +3,9 @@ import * as mysql2 from 'mysql2';
 import { SEQUELIZE } from '../constant/index.constant';
 import { seed } from './seed/db.seed';
 import { CountryModel } from './model/country.model';
-import { DataModel } from './model/data.model';
 import { OperatorModel } from './model/operator.model';
+import { CallRecordModel } from './model/call-record.model';
+import { PrefixModel } from './model/prefix.model';
 
 const force: any = process.env.PROD_DB_FORCE ?? false; // <----------------- To Initialize Database
 const alter: any = process.env.PROD_DB_ALTER ?? false; // <----------------- To Alternate Database
@@ -26,7 +27,12 @@ export const databaseProvider = [
         },
         logging: false,
       });
-      sequelize.addModels([CountryModel, DataModel, OperatorModel]);
+      sequelize.addModels([
+        CallRecordModel,
+        CountryModel,
+        OperatorModel,
+        PrefixModel,
+      ]);
 
       await sequelize.sync({ force, alter }).then(async () => {
         if (force) {

@@ -1,14 +1,5 @@
-import {
-  BelongsTo,
-  Column,
-  DataType,
-  ForeignKey,
-  HasMany,
-  Model,
-  Table,
-} from 'sequelize-typescript';
-import { CountryModel } from './country.model';
-import { DataModel } from './data.model';
+import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { PrefixModel } from './prefix.model';
 
 @Table({ modelName: 'operator' })
 export class OperatorModel extends Model {
@@ -24,26 +15,9 @@ export class OperatorModel extends Model {
   @Column(DataType.STRING)
   name: string;
 
-  @Column(DataType.STRING)
-  prefix: string;
-
-  // relationship with CountryModel
-  @ForeignKey(() => CountryModel)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: true,
-  })
-  countryId: number;
-
-  @BelongsTo(() => CountryModel, {
-    foreignKey: { allowNull: true },
-    onDelete: 'cascade',
-  })
-  country: CountryModel;
-
-  // relationship with DataModel
-  @HasMany(() => DataModel, {
+  // relationship with PrefixModel
+  @HasMany(() => PrefixModel, {
     foreignKey: { allowNull: false },
   })
-  data: DataModel[];
+  prefix: PrefixModel[];
 }
