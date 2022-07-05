@@ -8,5 +8,5 @@ export interface ICallRecord {
   sessionTime: string;
 
   prefixId: number;
-  prefix: IPrefix | number;
+  prefix?: IPrefix | number;
 }

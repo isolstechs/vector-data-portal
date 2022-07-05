@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import {
   CALL_RECORD_MODEL,
   COUNTRY_MODEL,
@@ -12,6 +12,7 @@ import { PrefixModel } from 'server/core/database/model/prefix.model';
 import { ICallRecord } from '../interfaces/call-record.interface';
 import { IDate } from '../interfaces/date.interaface';
 import { IPrefix } from '../interfaces/prefix.interface';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class HomeService {
@@ -22,23 +23,62 @@ export class HomeService {
     @Inject(PREFIX_MODEL) private _prefixModel: typeof PrefixModel
   ) {}
   async create(_createCallrecords: ICallRecord[]) {
-    // const prefixes: IPrefix[] = this._prefixModel.findAll({
-    //   raw: true,
-    // }) as any;
-    console.log();
+    let callRecords: ICallRecord[] = [];
+    let prefixCodes = _createCallrecords.map(
+      (_ccr: ICallRecord) => _ccr.prefix
+    );
 
-    // _createCallrecords.forEach((_ccr: ICallRecord) => {
-    //   console.log(_ccr);
-    // });
+    const prefixes = await this._prefixModel.findAll({
+      where: { code: { [Op.in]: prefixCodes } },
+      attributes: ['id', 'code', 'countryId', 'operatorId'],
+      raw: true,
+    });
 
-    // return prefixes;
+    _createCallrecords.forEach((_ccr: ICallRecord) => {
+      const prefix = prefixes.find((_p: IPrefix) => _p.code == _ccr.prefix);
+      if (!prefix) {
+        throw new NotImplementedException(
+          'Could not found given prefix! Prefix: ' + _ccr.prefix
+        );
+      }
+      callRecords.push({
+        aParty: _ccr.aParty,
+        bParty: _ccr.bParty,
+        date: _ccr.date,
+        sessionTime: _ccr.sessionTime,
+        prefixId: prefix.id,
+      });
+    });
+
+    await this._callRecordModel.bulkCreate(callRecords as any);
   }
 
-  findAll(_date: IDate) {
-    return `This action returns all home`;
-  }
+  async findAll(_date: IDate): Promise<any> {
+    let where;
 
-  export(_date: IDate) {
-    // return `This action returns a #${id} home`;
+    if (_date.start != 'all') {
+      where = { date: { [Op.between]: [_date.start, _date.end] } };
+    }
+
+    return await this._callRecordModel.findAll({
+      where,
+      attributes: ['id', 'aParty', 'bParty', 'date', 'sessionTime'],
+      include: [
+        {
+          model: this._prefixModel,
+          attributes: ['id', 'code', 'countryId', 'operatorId'],
+          include: [
+            {
+              model: this._countryModel,
+              attributes: ['name', 'alphaCode', 'numericCode'],
+            },
+            {
+              model: this._operatorModel,
+              attributes: ['name'],
+            },
+          ],
+        },
+      ],
+    });
   }
 }

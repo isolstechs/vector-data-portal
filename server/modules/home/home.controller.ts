@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { HomeService } from './home.service';
 import { CreateCallRecord } from './dto/create-call-record.dto';
 import { IDate } from '../interfaces/date.interaface';
@@ -15,10 +15,5 @@ export class HomeController {
   @Post('get-call-records')
   async findAll(@Body() _date: IDate) {
     return await this.homeService.findAll(_date);
-  }
-
-  @Get('export-call-records')
-  async export(@Body() _date: IDate) {
-    return await this.homeService.export(_date);
   }
 }

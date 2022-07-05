@@ -1,0 +1,48 @@
+<div class="mt-2 border-0 side-bar card">
+  <div
+    class="m-1 p-1 d-flex flex-row justify-content-between rounded"
+    style="background: #8080802b"
+  >
+    <div>
+      <!-- begin: total days -->
+      Generel Data: {{ difference }}
+      <!-- end: total days -->
+
+      <!--begin:: date range dropdown menu -->
+      <span>
+        <app-custom-date-range-menu
+          class="col-sm-2"
+          [hideTodayYesterday]="false"
+          [showDropdownButtonOrText]="'button'"
+          (dateRangeEmitter)="dateRangeChanged($event)"
+        ></app-custom-date-range-menu>
+      </span>
+      <!--end:: date range dropdown menu -->
+    </div>
+
+    <!-- begin: import call reocrds button -->
+    <span class="import-file-button" (click)="createCallRecordsModal()">
+      <mat-icon>add_circle</mat-icon>
+    </span>
+    <!-- end: import call reocrds button -->
+  </div>
+
+  <div class="card">
+    <!-- begin: total calls -->
+    <!-- <h1 *ngIf="totalCalls" class="mb-0 ps-4">Total Calls: {{ totalCalls }}</h1> -->
+    <!-- end: total calls -->
+
+    <!-- begin: calls graph -->
+    <div class="px-2" [style]="style">
+      <p-chart
+        type="bar"
+        [responsive]="true"
+        [height]="'100%'"
+        [data]="basicData"
+        [options]="horizontalOptions"
+        [plugins]="plugins"
+      ></p-chart>
+    </div>
+    <!-- end: calls graph -->
+  </div>
+</div>

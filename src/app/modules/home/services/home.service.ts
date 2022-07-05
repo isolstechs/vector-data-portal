@@ -22,13 +22,13 @@ export class HomeService {
     return this._homeApiService.createCallRecords(_callRecords).pipe(tap());
   }
 
-  getCallRecord(_date: IDate): Observable<ICallRecord[]> {
+  getCallRecords(_date: IDate): Observable<ICallRecord[]> {
     return this._homeApiService.getCallrecords(_date).pipe(
       tap((_callRecords: ICallRecord[]) => {
         if (_callRecords.length) {
           this.callRecordsSubject.next(_callRecords);
         }
-      }),
+      })
     );
   }
 }

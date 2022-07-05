@@ -1,0 +1,33 @@
+.side-bar {
+  overflow-y: auto;
+  // height: 100vh;
+  background: #eeeeee;
+
+  .card {
+    background: transparent;
+    border: 0;
+  }
+}
+
+.import-file-button {
+  position: relative;
+  mat-icon {
+    top: 2px;
+    font-size: 17px;
+    position: absolute;
+    right: -7px;
+    cursor: pointer;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  overflow-y: scroll;
+  background: #ffffff00;
+  box-shadow: inset 0 0 4px #cfcdcd;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b2b2b9;
+  border-radius: 10px;
+}

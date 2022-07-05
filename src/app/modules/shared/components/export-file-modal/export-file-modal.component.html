@@ -1,0 +1,40 @@
+<div>
+  <div class="d-flex align-items-center ps-3 pt-2 p-md-0">
+    <h2 class="me-auto mb-0 custom-dialog-title" mat-dialog-title>
+      Export CSV File Name
+    </h2>
+    <button
+      color="primary"
+      mat-raised-button
+      class="font-weight-bold me-2"
+      [disabled]="exportFileNameForm.invalid"
+      (click)="save()"
+    >
+      Save
+    </button>
+    <button
+      color="warn"
+      class="custom-button hover br-50 ms-2"
+      style="color: red"
+      (click)="closeModal()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="card-body pt-0">
+    <ng-container>
+      <!-- <form [formGroup]="importCSVFile"> -->
+      <div class="mt-2 mt-sm-4">
+        <form [formGroup]="exportFileNameForm" class="form-group row">
+          <mat-form-field class="w-100" appearance="fill">
+            <mat-label> CSV File Name </mat-label>
+            <input matInput type="text" formControlName="fileName" />
+            <mat-hint>For Exmaple: My File</mat-hint>
+          </mat-form-field>
+        </form>
+      </div>
+      <!-- </form> -->
+    </ng-container>
+  </div>
+</div>

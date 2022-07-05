@@ -17,7 +17,7 @@ export class HomeApiService {
     return this._apiService.request(
       'post',
       this.API_URL + '/create-call-records',
-      _callRecords,
+      _callRecords
     );
   }
 
@@ -25,7 +25,7 @@ export class HomeApiService {
     return this._apiService.request(
       'post',
       this.API_URL + '/get-call-records',
-      _date,
+      _date
     );
   }
 }

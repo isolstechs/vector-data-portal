@@ -1,5 +1,10 @@
+import { IPrefix } from './prefix.interface';
+
 export interface ICountry {
   id: number;
   name: string;
-  code: number;
+  numericCode: number;
+  alphaCode: string;
+
+  prefixes?: IPrefix[];
 }

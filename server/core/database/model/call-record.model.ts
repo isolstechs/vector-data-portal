@@ -24,7 +24,7 @@ export class CallRecordModel extends Model {
   @Column(DataType.STRING)
   bParty: string;
 
-  @Column(DataType.STRING)
+  @Column(DataType.DATE)
   date: string;
 
   @Column(DataType.STRING)

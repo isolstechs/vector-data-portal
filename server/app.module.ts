@@ -3,6 +3,7 @@ import { AngularUniversalModule } from '@nestjs/ng-universal';
 import { join } from 'path';
 import { AppServerModule } from '../src/main.server';
 import { AppController } from './app.controller';
+import { AppProviders } from './app.provider';
 import { AppService } from './app.service';
 import { DatabaseModule } from './core/database/database.module';
 import { HomeModule } from './modules/home/home.module';
@@ -17,6 +18,6 @@ import { HomeModule } from './modules/home/home.module';
     HomeModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ...AppProviders],
 })
 export class AppModule {}

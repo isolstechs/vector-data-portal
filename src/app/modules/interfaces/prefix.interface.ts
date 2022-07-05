@@ -1,3 +1,4 @@
+import { ICallRecord } from './call-record.interface';
 import { ICountry } from './country.interface';
 import { IOperator } from './operator.interface';
 
@@ -10,4 +11,5 @@ export interface IPrefix {
 
   country: ICountry;
   operator: IOperator;
+  callRecords?: ICallRecord[];
 }

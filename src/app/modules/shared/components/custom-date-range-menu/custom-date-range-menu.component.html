@@ -1,0 +1,160 @@
+<div
+  *ngIf="showDropdownButtonOrText == 'text'"
+  class="dropdownButtonOrTextContainer"
+>
+  <div class="upper ml-4">
+    <div [matMenuTriggerFor]="menu" class="inner">
+      <span [hidden]="selectedDateRangeType == 'custom'">{{
+        dateRangeText
+      }}</span>
+      <span [hidden]="selectedDateRangeType != 'custom'">
+        {{ startDate | date: "mediumDate" }} &mdash;
+        {{ endDate | date: "mediumDate" }}</span
+      >
+      <mat-icon>arrow_drop_down</mat-icon>
+    </div>
+  </div>
+</div>
+
+<!-- dropdown button  -->
+<!-- remove the style for orignal -->
+<button
+  style="height: auto; width: auto; position: relative"
+  *ngIf="showDropdownButtonOrText == 'button'"
+  [matMenuTriggerFor]="menu"
+  class="ml-2"
+  mat-icon-button
+  aria-label="Date Range Button"
+>
+  <!-- remove the style for orignal -->
+  <mat-icon style="font-size: 15px; position: absolute; top: -16px; width: auto"
+    >date_range</mat-icon
+  >
+</button>
+
+<!-- menu  -->
+<mat-menu class="custom-mat-menu" #menu="matMenu" (closed)="matMenuClosed()">
+  <div (click)="$event.stopPropagation()" class="selected-date-range">
+    <div class="selected-date-range-label">
+      <span>{{
+        selectedDateRangeType == "custom" ? "Custom" : dateRangeText
+      }}</span>
+    </div>
+    <div
+      *ngIf="selectedDateRangeType != -500"
+      class="selected-date-range-value"
+    >
+      {{ startDate | date: "mediumDate" }} &mdash;
+      {{ endDate | date: "mediumDate" }}
+    </div>
+    <div
+      *ngIf="selectedDateRangeType == -500"
+      class="selected-date-range-value"
+    >
+      All Records: Start &mdash; End
+    </div>
+  </div>
+  <hr (click)="$event.stopPropagation()" style="margin: 4px 0" />
+  <ng-container *ngIf="!hideTodayYesterday">
+    <button (click)="changeDateRange(0)" mat-menu-item>
+      Today
+      <mat-icon [hidden]="selectedDateRangeType != 0" class="float-right mr-0"
+        >done</mat-icon
+      >
+    </button>
+    <button (click)="changeDateRange(1)" mat-menu-item>
+      Yesterday
+      <mat-icon [hidden]="selectedDateRangeType != -1" class="float-right mr-0"
+        >done</mat-icon
+      >
+    </button>
+  </ng-container>
+  <button (click)="changeDateRange(7)" mat-menu-item>
+    Last 7 days
+    <mat-icon [hidden]="selectedDateRangeType != -7" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button
+    (click)="changeDateRange(14)"
+    mat-menu-item
+    [hidden]="!showPresetRanges"
+  >
+    Last 14 days
+
+    <mat-icon [hidden]="selectedDateRangeType != -14" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button (click)="changeDateRange(30)" mat-menu-item>
+    Last 30 days
+    <mat-icon [hidden]="selectedDateRangeType != -30" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button (click)="changeDateRange(90)" mat-menu-item>
+    Last 90 days
+    <mat-icon [hidden]="selectedDateRangeType != -90" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button
+    (click)="changeDateRange(180)"
+    mat-menu-item
+    [hidden]="!showPresetRanges"
+  >
+    Last 180 days
+
+    <mat-icon [hidden]="selectedDateRangeType != -180" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button
+    (click)="changeDateRange(365)"
+    mat-menu-item
+    [hidden]="!showPresetRanges"
+  >
+    Last calendar year
+
+    <mat-icon [hidden]="selectedDateRangeType != -365" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button
+    (click)="changeDateRange(500)"
+    mat-menu-item
+    [hidden]="!showPresetRanges"
+  >
+    Show All
+
+    <mat-icon [hidden]="selectedDateRangeType != -500" class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+  <button
+    mat-menu-item
+    [hidden]="showPresetRanges"
+    (click)="$event.stopPropagation(); togglePresetRanges(true)"
+  >
+    More preset ranges
+
+    <mat-icon class="float-right mr-0">keyboard_arrow_down</mat-icon>
+  </button>
+  <hr (click)="$event.stopPropagation()" />
+
+  <button (click)="dateRangePicker.openRangePicker()" mat-menu-item>
+    Custom...
+    <mat-icon
+      [hidden]="selectedDateRangeType != 'custom'"
+      class="float-right mr-0"
+      >done</mat-icon
+    >
+  </button>
+
+  <!-- should be near the one on which calender should open -->
+  <app-date-range-calendar
+    style="position: relative"
+    #dateRangePicker
+    (dateRangeCalendarEmitter)="dateRangeCalendarChanged($event)"
+  ></app-date-range-calendar>
+</mat-menu>

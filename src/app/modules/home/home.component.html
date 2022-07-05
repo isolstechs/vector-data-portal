@@ -1,6 +1,16 @@
-<p>Start editing to see some magic happen :)</p>
-
-<button (click)="CreateCallRecordsModal()">Import</button>
-<hr />
-
-<!-- <input type="file" accept=".csv" (change)="handleFileSelect($event)" /> -->
+<div>
+  <app-header></app-header>
+  <div class="row">
+    <app-side-bar
+      class="col-md-3"
+      [difference]="difference"
+      (dateEmitter)="changeDate($event)"
+      (exportEmitter)="openExportFileModal($event)"
+    ></app-side-bar>
+    <app-world-map
+      class="col-md-9"
+      [difference]="difference"
+      (exportEmitter)="openExportFileModal($event)"
+    ></app-world-map>
+  </div>
+</div>

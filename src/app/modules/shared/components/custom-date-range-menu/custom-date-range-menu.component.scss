@@ -1,0 +1,49 @@
+.selected-date-range {
+  font: 600 11px Roboto, Arial, Helvetica, sans-serif;
+  padding: 8px 10px 0 22px;
+}
+
+.selected-date-range-label {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.selected-date-range-value {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 0 8px;
+}
+
+.custom-mat-menu button {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 32px;
+  padding: 0 10px 0 16px;
+  height: 32px;
+}
+
+div.dropdownButtonOrTextContainer {
+  height: 40px;
+  line-height: 40px;
+}
+
+div.dropdownButtonOrTextContainer div.upper {
+  line-height: 1.5;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+div.dropdownButtonOrTextContainer div.inner {
+  display: flex;
+}
+
+div.dropdownButtonOrTextContainer span {
+  font-size: 13px;
+  font-family: 'Roboto', sans-serif;
+}
+
+div.dropdownButtonOrTextContainer mat-icon {
+  font-size: 17px;
+  padding-top: 2px;
+}

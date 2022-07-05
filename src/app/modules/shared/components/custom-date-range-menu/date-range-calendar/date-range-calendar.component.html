@@ -1,0 +1,27 @@
+<div class="mat-form-field-custom-date-range-picker">
+  <mat-form-field>
+    <mat-date-range-input
+      [formGroup]="rangeForm"
+      [rangePicker]="dateRangePicker"
+    >
+      <input formControlName="start" matStartDate placeholder="Start date" />
+      <input formControlName="end" matEndDate placeholder="End date" />
+    </mat-date-range-input>
+
+    <mat-date-range-picker
+      [calendarHeaderComponent]="dateRangeCalendarHeaderComponent"
+    >
+      <mat-date-range-picker-actions>
+        <button mat-button matDateRangePickerCancel>Cancel</button>
+        <button
+          style="background-color: #3e000d"
+          mat-raised-button
+          matDateRangePickerApply
+          (click)="applyDateRange()"
+        >
+          Apply
+        </button>
+      </mat-date-range-picker-actions>
+    </mat-date-range-picker>
+  </mat-form-field>
+</div>

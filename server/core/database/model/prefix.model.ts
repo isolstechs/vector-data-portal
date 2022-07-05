@@ -58,5 +58,5 @@ export class PrefixModel extends Model {
     foreignKey: { allowNull: false },
     onDelete: 'cascade',
   })
-  operators: CallRecordModel[];
+  callRecords: CallRecordModel[];
 }

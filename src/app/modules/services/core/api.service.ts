@@ -17,14 +17,14 @@ export class ApiService {
   constructor(
     private http: HttpClient,
     private _myMessageService: MyMessageService,
-    private _router: Router, // private inj: Injector
+    private _router: Router // private inj: Injector
   ) {}
 
   public request(
     method: 'post' | 'get' | 'put' | 'delete',
     type: string,
     _objectToSend?: any,
-    _httpParams?: HttpParams,
+    _httpParams?: HttpParams
   ): Observable<any> {
     // this.authService = this.inj.get(AuthService);
 
@@ -54,7 +54,7 @@ export class ApiService {
           '%capi.service %csuccess',
           'color: black; background: yellow; padding: 2px; border-radius: 2px;',
           'color: white; background: blue; padding: 2px; border-radius: 2px;',
-          data,
+          data
         );
         return data;
       }),
@@ -64,7 +64,7 @@ export class ApiService {
           '%capi.service %cError',
           'color: black; background: yellow; padding: 2px; border-radius: 2px;',
           'color: white; background: red; padding: 2px; border-radius: 2px;',
-          err,
+          err
         );
 
         if (err && err.statusText === 'Unauthorized') {
@@ -85,7 +85,7 @@ export class ApiService {
         ) {
           this._myMessageService.raiseMessage(
             'warn',
-            'Username already exists! Please use another one.',
+            'Username already exists! Please use another one.'
           );
         } else if (err && err.error && err.error.message == 'noPrefixesFound') {
           this._myMessageService.raiseMessage('warn', 'No Rate Found!');
@@ -93,7 +93,7 @@ export class ApiService {
           // error message for db query
           this._myMessageService.raiseMessage(
             'error',
-            'Error in fetching Data',
+            'Error in fetching Data'
           );
           return throwError(err.error.message); // returning only message to the componenet back
         } else {
@@ -102,7 +102,7 @@ export class ApiService {
 
         console.error('===> Error ', err);
         return throwError(err);
-      }),
+      })
     );
 
     return request;

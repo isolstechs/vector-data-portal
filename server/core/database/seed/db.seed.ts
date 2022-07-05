@@ -7,6 +7,7 @@ import { ICountry } from 'server/modules/interfaces/country.interface';
 import { IPrefix } from 'server/modules/interfaces/prefix.interface';
 import { ICountryOperatorList } from 'server/modules/interfaces/country-operator-list.interface';
 import { IOperator } from 'server/modules/interfaces/operator.interface';
+import { countryList } from './country-list';
 
 export const seed = async () => {
   let promiseArray = [];
@@ -18,7 +19,11 @@ export const seed = async () => {
   // Separating countries and operators
   updatedCodeList.forEach((_ucl: ICountryOperatorList) => {
     if (_ucl.country == _ucl.operator) {
-      countries.push({ name: _ucl.country, code: _ucl.prefix });
+      countries.push({
+        name: _ucl.country,
+        numericCode: _ucl.prefix,
+        alphaCode: countryList.find((_c) => _c.name == _ucl.country)?.code,
+      });
     } else {
       operators.push({ name: _ucl.operator });
     }
@@ -47,7 +52,10 @@ export const seed = async () => {
   });
 
   promiseArray.push(PrefixModel.bulkCreate(prefix.slice(0, 20000)));
+
   promiseArray.push(PrefixModel.bulkCreate(prefix.slice(20001, 40000)));
+
   promiseArray.push(PrefixModel.bulkCreate(prefix.slice(40001)));
+
   await Promise.all(promiseArray);
 };

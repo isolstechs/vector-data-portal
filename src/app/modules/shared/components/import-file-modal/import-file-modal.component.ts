@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Papa } from 'ngx-papaparse';
 import { Subject } from 'rxjs';
+import { HomeService } from '../../../home/services/home.service';
 import { ICallRecord } from '../../../interfaces/call-record.interface';
-import { MyMessageService } from '../../../services/core/my-message.service';
-import { HomeService } from '../../services/home.service';
+import { MessageService } from '../../../services/core/message.service';
 
 @Component({
   selector: 'app-import-file-modal',
@@ -25,7 +25,7 @@ export class ImportFileModalComponent implements OnInit {
 
   constructor(
     private _dialogRef: MatDialogRef<ImportFileModalComponent>,
-    private _messageService: MyMessageService,
+    private _messageService: MessageService,
     private _papa: Papa,
     private _homeService: HomeService,
     private _cd: ChangeDetectorRef
@@ -70,9 +70,8 @@ export class ImportFileModalComponent implements OnInit {
   }
 
   async save() {
-    if (!this.fileSelect || this.showError) {
+    if (!this.fileSelect || this.showError || !this.callRecords) {
       return;
-      // || !this.callRecords
     }
 
     this.isLoading = true;
@@ -91,9 +90,6 @@ export class ImportFileModalComponent implements OnInit {
   }
 
   private changeCSVFileToArray(_csvFile: any): void {
-    // const files = _csvFile.target.files; // FileList object
-    console.log(_csvFile);
-    // const file = _csvFile[0];
     const reader = new FileReader();
     reader.readAsText(_csvFile);
     reader.onload = (event: any) => {
@@ -102,9 +98,7 @@ export class ImportFileModalComponent implements OnInit {
         skipEmptyLines: true,
         header: true,
 
-        transformHeader(_h) {
-          let i = 0;
-          // header == 'Destination Prefix' ? (return 'prefix') : null
+        transformHeader: (_h) => {
           if (_h == 'Destination Prefix') {
             _h = 'prefix';
           } else if (_h == 'A Party') {
@@ -121,9 +115,7 @@ export class ImportFileModalComponent implements OnInit {
         },
         complete: (results: any) => {
           this.checkingHeaders(results.data[0]);
-          // this.callRecords = results.data;
-          // console.log(this.test);
-          // console.log('Parsed: k', results.data);
+          this.callRecords = results.data;
         },
       });
     };
@@ -150,12 +142,10 @@ export class ImportFileModalComponent implements OnInit {
       : (this.headingError = this.headingError + 'SessionTime.');
 
     if (i < 5) {
-      console.log(this.headingError);
       this.customError = 'Please give the appropriate Headers!';
       this.showError = true;
     } else {
       this.headingError = '';
-      console.log(this.headingError);
     }
     this._cd.detectChanges();
   }
