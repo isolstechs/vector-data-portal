@@ -1,0 +1,64 @@
+.hover:hover {
+  background-color: lightgrey !important;
+}
+
+.hb:hover {
+  opacity: 0.65 !important;
+}
+
+.a-white:hover {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+// for border-radius 50
+.br-50 {
+  border-radius: 50px !important;
+}
+
+.cp {
+  cursor: pointer;
+}
+
+.custom-button {
+  align-items: center;
+  border: 0px;
+  display: inline-flex;
+  height: 38px;
+  background-color: transparent;
+  color: black;
+  margin-right: 5px;
+}
+
+// for showing some text with ...
+.ellipsis {
+  display: block !important;
+  white-space: nowrap;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 2px;
+}
+
+.mat-snack-bar-container {
+  &.success-snackbar {
+    background-color: #c9f7f5 !important;
+
+    * {
+      @extend .text-success;
+    }
+  }
+  &.warn-snackbar {
+    background-color: #fff4de !important;
+    * {
+      @extend .text-warning;
+    }
+  }
+  &.error-snackbar {
+    background-color: #ffe2e5 !important;
+
+    * {
+      @extend .text-danger;
+    }
+  }
+}
