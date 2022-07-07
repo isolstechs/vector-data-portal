@@ -20,6 +20,11 @@
   }
 }
 
+.no-data-found {
+  height: 30vh;
+  align-items: center;
+}
+
 ::-webkit-scrollbar {
   width: 4px;
   overflow-y: scroll;

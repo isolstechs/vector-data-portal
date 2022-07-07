@@ -3,15 +3,13 @@
     Countries: {{ difference }}
   </div>
 
-  <div class="box">
-    <div class="box-body">
-      <!-- world map -->
-      <!-- <div> -->
-      <div
-        id="world-map"
-        style="height: 90vh; overflow: hidden; background-color: transparent"
-      ></div>
-      <!-- </div> -->
-    </div>
+  <div class="box" [style]="style">
+    <div id="world-map" [style]="style"></div>
   </div>
+
+  <!-- begin: error div -->
+  <div *ngIf="!dataFound" class="d-flex justify-content-center">
+    <h1 class="no-data-found row">No Record Found</h1>
+  </div>
+  <!-- end: error div -->
 </div>

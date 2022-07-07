@@ -21,6 +21,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild(SideBarComponent) _sideBarComponent: SideBarComponent;
   @ViewChild(WorldMapComponent) _worldMapComponent: WorldMapComponent;
 
+  initialCall: boolean = true;
+  dataFound: boolean;
   date: IDate;
   difference: string;
   countriesGraph: ICountryGraph[];
@@ -36,9 +38,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getCountries();
-    setTimeout(() => {
-      this.initialDate();
-    }, 1000);
   }
 
   ngOnDestroy(): void {
@@ -128,28 +127,20 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  // initializing date for call records
-  private initialDate(): void {
-    const d = new Date();
-    this.date = {
-      end: d as any,
-      start: new Date(d.setDate(d.getDate() - d.getDay() - 5)) as any,
-    };
-
-    // calling function to get call records
-    this.getCountriesCallRecrods();
-  }
-
   // getting call records array according to given date
   private getCountriesCallRecrods(): void {
     this._homeService
       .getCallRecords(this.date)
       .pipe(takeUntil(this._takeUntil))
       .subscribe((_callRecords: ICallRecord[]) => {
-        if (_callRecords.length) {
-          this.callRecords = _callRecords;
-          this.changeCallRecordsToGraphData();
+        if (!_callRecords.length) {
+          this.dataFound = false;
+        } else {
+          this.dataFound = true;
         }
+
+        this.callRecords = _callRecords;
+        this.changeCallRecordsToGraphData();
       });
   }
 
@@ -179,12 +170,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // calling fucntion on sideBarComponent to change countriesGraph
   private changeGraphOnSideBarComponent(): void {
-    this._sideBarComponent.initialingAndChangingGraphData(this.countriesGraph);
+    this._sideBarComponent.initialingAndChangingGraphData(
+      this.countriesGraph,
+      this.dataFound
+    );
   }
 
   // calling fucntion on worlMapComponent to change countriesGraph
   private changeGraphOnWorlMapComponent(): void {
-    this._worldMapComponent.initWorldMapData(this.countriesGraph);
+    this._worldMapComponent.initWorldMapData(
+      this.countriesGraph,
+      this.dataFound
+    );
   }
 
   // showing differnce between start and end date

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -22,18 +23,17 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   @Input() difference: string;
   @Output() exportEmitter: EventEmitter<string> = new EventEmitter();
 
+  dataFound: boolean;
+  style = {
+    height: '90vh',
+    overflow: 'hidden',
+    display: 'box',
+  };
   countriesGraph: ICountryGraph[] = [];
   countryCodeObject: any;
-  app = {
-    color: {
-      primary: '#2499ee',
-      accent: '#6284f3',
-      warn: '#907eec',
-    },
-  };
 
   private _takeUntil: Subject<null> = new Subject<null>();
-  constructor() {}
+  constructor(private _cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {}
 
@@ -43,7 +43,16 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   }
 
   // intilize the world and calling this function from parent component
-  initWorldMapData(_data: ICountryGraph[]) {
+  initWorldMapData(_data: ICountryGraph[], _dataFound: boolean) {
+    // checking data found or not
+    if (!_dataFound) {
+      this.dataFound = false;
+      // removing world map if available
+      this.removeWorldMap('jvectormap-container');
+      this._cd.detectChanges();
+      return;
+    }
+    this.dataFound = true;
     // removing world map if available
     this.removeWorldMap('jvectormap-container');
     if (_data.length) {
@@ -115,7 +124,9 @@ export class WorldMapComponent implements OnInit, OnDestroy {
       },
       onRegionClick: (event, code) => {
         const countryObject = this.getTooltipValue(code);
-        this.exportEmitter.next(countryObject.name);
+        if (countryObject?.total > 0) {
+          this.exportEmitter.next(countryObject.name);
+        }
       },
     };
 

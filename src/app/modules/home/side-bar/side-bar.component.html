@@ -33,7 +33,7 @@
     <!-- end: total calls -->
 
     <!-- begin: calls graph -->
-    <div class="px-2" [style]="style">
+    <div *ngIf="dataFound" class="px-2" [style]="style">
       <p-chart
         type="bar"
         [responsive]="true"
@@ -44,5 +44,11 @@
       ></p-chart>
     </div>
     <!-- end: calls graph -->
+
+    <!-- begin: error div -->
+    <div *ngIf="!dataFound" class="d-flex justify-content-center">
+      <h3 class="no-data-found row">No Record Found</h3>
+    </div>
+    <!-- end: error div -->
   </div>
 </div>

@@ -15,7 +15,6 @@ import * as moment from 'moment';
   selector: 'app-custom-date-range-menu',
   templateUrl: './custom-date-range-menu.component.html',
   styleUrls: ['./custom-date-range-menu.component.scss'],
-
   encapsulation: ViewEncapsulation.None,
 })
 export class CustomDateRangeMenuComponent implements OnInit {

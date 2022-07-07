@@ -25,6 +25,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
   @Output() dateEmitter: EventEmitter<IDate> = new EventEmitter();
   @Output() exportEmitter: EventEmitter<string> = new EventEmitter();
 
+  dataFound: boolean;
   basicData: any;
   horizontalOptions: any;
   plugins: any;
@@ -53,7 +54,15 @@ export class SideBarComponent implements OnInit, OnDestroy {
   }
 
   // initializing and changing graph data from parent component
-  initialingAndChangingGraphData(_data: ICountryGraph[]): void {
+  initialingAndChangingGraphData(
+    _data: ICountryGraph[],
+    _dataFound: boolean
+  ): void {
+    if (!_dataFound) {
+      this.dataFound = false;
+      return;
+    }
+    this.dataFound = true;
     this.totalCalls = 0;
     let total: number[] = [];
     let countries: string[] = [];
@@ -173,8 +182,16 @@ export class SideBarComponent implements OnInit, OnDestroy {
         },
 
         // click functions
-        onClick: (_data) => {
-          this.exportEmitter.next(_data.chart.tooltip.dataPoints[0].label);
+        onClick: (_data, event) => {
+          // getting active point
+          var activePoints = _data.chart.getElementsAtEventForMode(
+            _data.native,
+            'point',
+            event[0].element
+          );
+          this.exportEmitter.next(
+            _data.chart.data.labels[activePoints[0].index]
+          );
         },
       });
 

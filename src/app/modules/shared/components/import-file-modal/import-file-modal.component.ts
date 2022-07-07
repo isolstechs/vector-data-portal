@@ -116,6 +116,20 @@ export class ImportFileModalComponent implements OnInit {
         complete: (results: any) => {
           this.checkingHeaders(results.data[0]);
           this.callRecords = results.data;
+
+          // changing date to Date format
+          this.callRecords.map((_cl: ICallRecord) => {
+            _cl.date =
+              _cl.date.slice(6, 10) +
+              '-' +
+              _cl.date.slice(3, 5) +
+              '-' +
+              _cl.date.slice(0, 2) +
+              'T' +
+              _cl.date.slice(11, _cl.date.length) +
+              ':00Z';
+            _cl.date = new Date(_cl.date) as any;
+          });
         },
       });
     };
