@@ -119,6 +119,16 @@ export class ImportFileModalComponent implements OnInit {
 
           // changing date to Date format
           this.callRecords.map((_cl: ICallRecord) => {
+            // checking two digits for date available or not
+            if (_cl.date.slice(1, 2) == '/') {
+              _cl.date = '0' + _cl.date;
+            }
+
+            // checking two digits for hour available or not
+            if (_cl.date.slice(13, 14) != ':') {
+              _cl.date = _cl.date.slice(0, 11) + '0' + _cl.date.slice(11);
+            }
+
             _cl.date =
               _cl.date.slice(6, 10) +
               '-' +
@@ -128,8 +138,10 @@ export class ImportFileModalComponent implements OnInit {
               'T' +
               _cl.date.slice(11, _cl.date.length) +
               ':00Z';
-            _cl.date = new Date(_cl.date) as any;
+            // _cl.date = new Date(_cl.date) as any;
           });
+
+          console.log(this.callRecords);
         },
       });
     };
