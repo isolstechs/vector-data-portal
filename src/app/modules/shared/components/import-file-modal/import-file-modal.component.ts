@@ -124,6 +124,11 @@ export class ImportFileModalComponent implements OnInit {
               _cl.date = '0' + _cl.date;
             }
 
+            // checking two digits for months available or not
+            if (_cl.date.slice(4, 5) == '/') {
+              _cl.date = _cl.date.slice(0, 3) + '0' + _cl.date.slice(3);
+            }
+
             // checking two digits for hour available or not
             if (_cl.date.slice(13, 14) != ':') {
               _cl.date = _cl.date.slice(0, 11) + '0' + _cl.date.slice(11);
