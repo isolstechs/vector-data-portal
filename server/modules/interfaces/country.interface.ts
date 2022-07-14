@@ -1,6 +1,7 @@
 export interface ICountry {
   id?: number;
   name: string;
-  numericCode: number;
-  alphaCode: string;
+  code: string;
+  // numericCode: number;
+  // alphaCode: string;
 }

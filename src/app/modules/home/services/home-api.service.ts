@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ICallRecord } from '../../interfaces/call-record.interface';
 import { IDate } from '../../interfaces/date.interaface';
+import { IPrefixList } from '../../interfaces/prefix-list.interface';
 import { ApiService } from '../../services/core/api.service';
 
 @Injectable({
@@ -18,6 +19,14 @@ export class HomeApiService {
       'post',
       this.API_URL + '/create-call-records',
       _callRecords
+    );
+  }
+
+  createPrefixes(_prefixes: IPrefixList[]): Observable<any> {
+    return this._apiService.request(
+      'post',
+      this.API_URL + '/create-prefixes',
+      _prefixes
     );
   }
 

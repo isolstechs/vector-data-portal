@@ -11,12 +11,14 @@ import { ImportFileModalComponent } from './components/import-file-modal/import-
 import { ChartModule } from 'primeng/chart';
 import { SharedService } from './services/shared.service';
 import { ExportFileModalComponent } from './components/export-file-modal/export-file-modal.component';
+import { ImportPrefixFileModalComponent } from './components/import-prefix-file-modal/import-prefix-file-modal.component';
 
 @NgModule({
   declarations: [
     CustomDateRangeMenuComponent,
     DateRangeCalendarComponent,
     DateRangeCalendarHeaderComponent,
+    ImportPrefixFileModalComponent,
     ImportFileModalComponent,
     ExportFileModalComponent,
   ],

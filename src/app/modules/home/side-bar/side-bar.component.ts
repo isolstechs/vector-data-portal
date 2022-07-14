@@ -72,12 +72,14 @@ export class SideBarComponent implements OnInit, OnDestroy {
     _.orderBy(_data, ['total'], ['desc']).forEach((_cg: ICountryGraph) => {
       if (_cg.total > 0) {
         total.push(_cg.total);
-        this.totalCalls += _cg.total;
+        console.log(_cg);
+        // this.totalCalls += _cg.total;
         // percentage.push(_cg.percentage);
-        countries.push(_cg.name);
+        countries.push(_cg.name.charAt(0).toUpperCase() + _cg.name.slice(1));
         height += 30;
       }
     });
+    console.log(countries);
 
     // setting height for chartjs main div
     this.style = `height: ${height + 30}px`;
@@ -111,11 +113,10 @@ export class SideBarComponent implements OnInit, OnDestroy {
             callbacks: {
               label: (context) => {
                 const tooltipValuesObject = this.getTooltipValue(context.label);
+                console.log(context);
                 const value: string[] = [];
                 value[0] = 'Total: ' + tooltipValuesObject.total;
-                value[1] = 'Country Name: ' + tooltipValuesObject.name;
-                value[2] = 'Country ISO Code: ' + tooltipValuesObject.alphaCode;
-                value[3] = 'Country Code: ' + tooltipValuesObject.numericCode;
+                value[1] = 'Country Code: ' + tooltipValuesObject.code;
 
                 return value;
               },
@@ -190,7 +191,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
             event[0].element
           );
           this.exportEmitter.next(
-            _data.chart.data.labels[activePoints[0].index]
+            _data.chart.data.labels[activePoints[0].index].toLowerCase()
           );
         },
       });
@@ -216,7 +217,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
     let indexOfCountry, countryObject;
 
     indexOfCountry = this.countriesGraph.findIndex(
-      (e) => e.name == _countryName
+      (e) => e.name == _countryName.toLowerCase()
     );
 
     if (indexOfCountry != -1) {
@@ -226,8 +227,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
     return {
       total: countryObject ? countryObject.total : '',
       name: countryObject ? countryObject.name : '',
-      alphaCode: countryObject ? countryObject.alphaCode : '',
-      numericCode: countryObject ? countryObject.numericCode : '',
+      code: countryObject ? countryObject.code : '',
     };
   }
 }

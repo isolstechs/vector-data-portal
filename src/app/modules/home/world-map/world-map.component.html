@@ -1,6 +1,15 @@
 <div class="mt-2 border-0 card world-map">
-  <div class="m-1 p-1 rounded" style="background: #8080802b">
+  <div
+    class="m-1 p-1 rounded d-flex flex-row justify-content-between"
+    style="background: #8080802b"
+  >
     Countries: {{ difference }}
+
+    <!-- begin: import prefix button -->
+    <span class="import-file-button" (click)="createPrefixesModal()">
+      <mat-icon>add_circle</mat-icon>
+    </span>
+    <!-- end: import prefix button -->
   </div>
 
   <div class="box" [style]="style">

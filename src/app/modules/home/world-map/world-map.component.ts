@@ -11,6 +11,8 @@ import { Subject } from 'rxjs';
 import * as _ from 'lodash';
 import { Countries } from './world-map-countries';
 import { ICountryGraph } from '../../interfaces/country-graph.interface';
+import { MatDialog } from '@angular/material/dialog';
+import { ImportPrefixFileModalComponent } from '../../shared/components/import-prefix-file-modal/import-prefix-file-modal.component';
 
 declare var jQuery: any;
 
@@ -33,7 +35,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   countryCodeObject: any;
 
   private _takeUntil: Subject<null> = new Subject<null>();
-  constructor(private _cd: ChangeDetectorRef) {}
+  constructor(private _cd: ChangeDetectorRef, private _dialog: MatDialog) {}
 
   ngOnInit(): void {}
 
@@ -70,10 +72,17 @@ export class WorldMapComponent implements OnInit, OnDestroy {
 
     // creating a property named with country code with the value of total calls
     graphData.forEach((e) => {
-      graphValues[e.alphaCode] = e.total;
+      graphValues[e.code] = e.total;
     });
 
     this.initWorldMap(_containerId, graphValues);
+  }
+
+  // open modal for creating new call records
+  createPrefixesModal() {
+    this._dialog.open(ImportPrefixFileModalComponent, {
+      width: '400px',
+    });
   }
 
   // creating world map
@@ -111,14 +120,8 @@ export class WorldMapComponent implements OnInit, OnDestroy {
               'Total            : ' +
               tooltipValuesObject.total +
               '<br>' +
-              'Country Name     : ' +
-              tooltipValuesObject.name +
-              '<br>' +
-              'Country ISO Code : ' +
-              tooltipValuesObject.alphaCode +
-              '<br>' +
               'Country Code     : ' +
-              tooltipValuesObject.numericCode
+              tooltipValuesObject.code
           );
         }
       },
@@ -139,7 +142,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     let indexOfCountry, countryObject;
 
     indexOfCountry = this.countriesGraph.findIndex(
-      (e) => e.alphaCode == _countryCode
+      (e) => e.code == _countryCode
     );
 
     if (indexOfCountry != -1) {
@@ -149,8 +152,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     return {
       total: countryObject ? countryObject.total : '',
       name: countryObject ? countryObject.name : '',
-      alphaCode: countryObject ? countryObject.alphaCode : '',
-      numericCode: countryObject ? countryObject.numericCode : '',
+      code: countryObject ? countryObject.code : '',
     };
   }
 

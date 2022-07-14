@@ -22,7 +22,7 @@ export class PrefixModel extends Model {
   })
   id: number;
 
-  @Column(DataType.INTEGER)
+  @Column({ type: DataType.INTEGER, unique: true })
   code: number;
 
   // relationship with CountryModel

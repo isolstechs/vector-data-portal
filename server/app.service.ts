@@ -9,7 +9,7 @@ export class AppService {
   ) {}
   async getCountries(): Promise<any> {
     return this._countryModel.findAll({
-      attributes: ['id', 'name', 'alphaCode', 'numericCode'],
+      attributes: ['id', 'name', 'code'],
     });
   }
 }

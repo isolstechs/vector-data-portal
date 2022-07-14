@@ -40,6 +40,18 @@
   padding-top: 2px;
 }
 
+// for custom import file button styling for prefix and call records
+.import-file-button {
+  position: relative;
+  mat-icon {
+    top: 2px;
+    font-size: 17px;
+    position: absolute;
+    right: -7px;
+    cursor: pointer;
+  }
+}
+
 .mat-snack-bar-container {
   &.success-snackbar {
     background-color: #c9f7f5 !important;

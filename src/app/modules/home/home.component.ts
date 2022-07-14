@@ -154,8 +154,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         return {
           id,
           name: _tempCountry?.name,
-          numericCode: _tempCountry?.numericCode,
-          alphaCode: _tempCountry?.alphaCode,
+          code: _tempCountry?.code,
           total: count,
           // percentage: (100 * count) / this.callRecords.length,
         };

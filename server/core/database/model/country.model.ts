@@ -15,11 +15,14 @@ export class CountryModel extends Model {
   @Column(DataType.STRING)
   name: string;
 
-  @Column(DataType.INTEGER)
-  numericCode: number;
-
   @Column(DataType.STRING)
-  alphaCode: string;
+  code: string;
+
+  // @Column(DataType.INTEGER)
+  // numericCode: number;
+
+  // @Column(DataType.STRING)
+  // alphaCode: string;
 
   // relationship with PrefixModel
   @HasMany(() => PrefixModel, {

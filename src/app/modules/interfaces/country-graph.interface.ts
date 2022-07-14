@@ -1,8 +1,7 @@
 export interface ICountryGraph {
   id: number;
   name: string;
-  numericCode: number;
-  alphaCode: string;
+  code: string;
 
   total: number;
   // percentage: string;

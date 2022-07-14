@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ICallRecord } from '../../interfaces/call-record.interface';
 import { IDate } from '../../interfaces/date.interaface';
+import { IPrefixList } from '../../interfaces/prefix-list.interface';
 import { HomeApiService } from './home-api.service';
 
 @Injectable({
@@ -20,6 +21,10 @@ export class HomeService {
 
   createCallRecord(_callRecords: ICallRecord[]): Observable<ICallRecord[]> {
     return this._homeApiService.createCallRecords(_callRecords).pipe(tap());
+  }
+
+  createPrefixes(_prefixes: IPrefixList[]): Observable<IPrefixList[]> {
+    return this._homeApiService.createPrefixes(_prefixes).pipe(tap());
   }
 
   getCallRecords(_date: IDate): Observable<ICallRecord[]> {
