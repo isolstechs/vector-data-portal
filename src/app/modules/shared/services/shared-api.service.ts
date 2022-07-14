@@ -8,7 +8,7 @@ import { ApiService } from '../../services/core/api.service';
   providedIn: 'root',
 })
 export class SharedApiService {
-  API_URL = `${environment.apiUrl}/`;
+  API_URL = `${environment.apiUrl}`;
 
   constructor(private _apiService: ApiService) {}
 

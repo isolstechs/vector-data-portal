@@ -103,7 +103,7 @@ export class HomeService {
     let where;
 
     if (_date.start != 'all') {
-      where = { date: { [Op.between]: [_date.start, _date.end] } };
+      where = { date: { [Op.gt]: _date.start, [Op.lt]: _date.end } };
     }
 
     return await this._callRecordModel.findAll({

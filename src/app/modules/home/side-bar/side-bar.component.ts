@@ -72,14 +72,12 @@ export class SideBarComponent implements OnInit, OnDestroy {
     _.orderBy(_data, ['total'], ['desc']).forEach((_cg: ICountryGraph) => {
       if (_cg.total > 0) {
         total.push(_cg.total);
-        console.log(_cg);
         // this.totalCalls += _cg.total;
         // percentage.push(_cg.percentage);
         countries.push(_cg.name.charAt(0).toUpperCase() + _cg.name.slice(1));
         height += 30;
       }
     });
-    console.log(countries);
 
     // setting height for chartjs main div
     this.style = `height: ${height + 30}px`;
@@ -113,7 +111,6 @@ export class SideBarComponent implements OnInit, OnDestroy {
             callbacks: {
               label: (context) => {
                 const tooltipValuesObject = this.getTooltipValue(context.label);
-                console.log(context);
                 const value: string[] = [];
                 value[0] = 'Total: ' + tooltipValuesObject.total;
                 value[1] = 'Country Code: ' + tooltipValuesObject.code;

@@ -3,6 +3,7 @@ import {
   Column,
   DataType,
   ForeignKey,
+  Index,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -24,6 +25,7 @@ export class CallRecordModel extends Model {
   @Column(DataType.STRING)
   bParty: string;
 
+  @Index
   @Column(DataType.DATE)
   date: string;
 

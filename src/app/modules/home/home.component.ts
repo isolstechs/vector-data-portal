@@ -185,6 +185,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // showing differnce between start and end date
   private calcDate(date1: Date, date2: Date) {
+    if (date1.toDateString() == date2.toDateString()) {
+      this.difference = 'Today';
+      return;
+    }
+
     let message: string;
     var diff = Math.floor(date2.getTime() - date1.getTime());
     var day = 1000 * 60 * 60 * 24;

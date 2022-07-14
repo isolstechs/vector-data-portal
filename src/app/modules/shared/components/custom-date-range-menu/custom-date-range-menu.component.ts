@@ -56,7 +56,7 @@ export class CustomDateRangeMenuComponent implements OnInit {
     }
   }
   ngOnInit(): void {
-    this.changeDateRange(7);
+    this.changeDateRange(0);
   }
 
   togglePresetRanges(val: boolean): void {
