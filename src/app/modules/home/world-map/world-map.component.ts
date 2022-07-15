@@ -116,7 +116,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
             el.html() +
               '<hr style="margin: 0; border-style: inset; border:1px solid; border-top: 1px solid rgba(0,0,0,.1);" />' +
               'Total            : ' +
-              tooltipValuesObject.total +
+              tooltipValuesObject.total.toLocaleString() +
               '<br>' +
               'Country Code     : ' +
               tooltipValuesObject.code

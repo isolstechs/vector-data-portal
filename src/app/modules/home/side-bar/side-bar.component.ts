@@ -108,14 +108,15 @@ export class SideBarComponent implements OnInit, OnDestroy {
           // tooltip options
           tooltip: {
             enabled: true,
-            // mode: 'single',
             displayColors: false,
             callbacks: {
-              label: (context) => {
+              label: (context, coordinates) => {
+                console.log(coordinates);
                 const tooltipValuesObject = this.getTooltipValue(context.label);
                 const value: string[] = [];
-                value[0] = 'Total: ' + tooltipValuesObject.total;
-                // value[1] = 'Country Code: ' + tooltipValuesObject.code;
+                value[0] =
+                  'Total: ' + tooltipValuesObject.total.toLocaleString();
+                value[1] = 'Country Code: ' + tooltipValuesObject.code;
 
                 return value;
               },
@@ -146,7 +147,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
               },
             },
             formatter: function (value) {
-              return value;
+              return value.toLocaleString();
             },
           },
         },
