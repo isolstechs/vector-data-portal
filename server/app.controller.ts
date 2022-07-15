@@ -6,7 +6,17 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('get-countries')
-  getCountries(): any {
-    return this.appService.getCountries();
+  async getCountries(): Promise<any> {
+    return await this.appService.getCountries();
+  }
+
+  @Get('get-operators')
+  async getOperators(): Promise<any> {
+    return await this.appService.getOperators();
+  }
+
+  @Get('get-prefixes')
+  async getPrefixes(): Promise<any> {
+    return await this.appService.getPrefixes();
   }
 }

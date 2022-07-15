@@ -70,11 +70,13 @@ export class SideBarComponent implements OnInit, OnDestroy {
 
     this.countriesGraph = _data;
     _.orderBy(_data, ['total'], ['desc']).forEach((_cg: ICountryGraph) => {
-      if (_cg.total > 0) {
+      if (_cg?.total > 0) {
         total.push(_cg.total);
         // this.totalCalls += _cg.total;
         // percentage.push(_cg.percentage);
-        countries.push(_cg.name.charAt(0).toUpperCase() + _cg.name.slice(1));
+        countries.push(
+          _cg?.name?.charAt(0).toUpperCase() + _cg?.name?.slice(1)
+        );
         height += 30;
       }
     });
@@ -113,7 +115,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
                 const tooltipValuesObject = this.getTooltipValue(context.label);
                 const value: string[] = [];
                 value[0] = 'Total: ' + tooltipValuesObject.total;
-                value[1] = 'Country Code: ' + tooltipValuesObject.code;
+                // value[1] = 'Country Code: ' + tooltipValuesObject.code;
 
                 return value;
               },

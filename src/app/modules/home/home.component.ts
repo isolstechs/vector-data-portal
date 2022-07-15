@@ -11,6 +11,8 @@ import * as _ from 'lodash';
 import { WorldMapComponent } from './world-map/world-map.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ExportFileModalComponent } from '../shared/components/export-file-modal/export-file-modal.component';
+import { IOperator } from '../interfaces/operator.interface';
+import { IPrefix } from '../interfaces/prefix.interface';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +28,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   date: IDate;
   difference: string;
   countriesGraph: ICountryGraph[];
-  countries: ICountry[];
+  operators = {};
+  countries = {
+    name: {},
+    code: {},
+  };
+  prefixes = {
+    code: {},
+    operatorId: {},
+    countryId: {},
+  };
   callRecords: ICallRecord[];
 
   private _takeUntil: Subject<null> = new Subject<null>();
@@ -38,6 +49,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getCountries();
+    this.getOperators();
+    this.getPrefixes();
   }
 
   ngOnDestroy(): void {
@@ -63,7 +76,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.calcDate(start, end);
 
       // calling this function to change call records according to given date
-      this.getCountriesCallRecrods();
+      setTimeout(() => {
+        this.getCountriesCallRecrods();
+      }, 500);
     }
   }
 
@@ -118,11 +133,44 @@ export class HomeComponent implements OnInit, OnDestroy {
   // getting countries array
   private getCountries(): void {
     this._sharedService
-      .getCountreis()
+      .getCountries()
       .pipe(takeUntil(this._takeUntil))
       .subscribe((_countries: ICountry[]) => {
         if (_countries.length) {
-          this.countries = _countries;
+          _countries.forEach((_c: ICountry) => {
+            this.countries.name[_c.id] = _c.name;
+            this.countries.code[_c.id] = _c.code;
+          });
+        }
+      });
+  }
+
+  // getting operators array
+  private getOperators(): void {
+    this._sharedService
+      .getOperators()
+      .pipe(takeUntil(this._takeUntil))
+      .subscribe((_operators: IOperator[]) => {
+        if (_operators.length) {
+          _operators.forEach((_o: IOperator) => {
+            this.operators[_o.id] = _o.name;
+          });
+        }
+      });
+  }
+
+  // getting prefixes array
+  private getPrefixes(): void {
+    this._sharedService
+      .getPrefixes()
+      .pipe(takeUntil(this._takeUntil))
+      .subscribe((_prefixes: IPrefix[]) => {
+        if (_prefixes.length) {
+          _prefixes.forEach((_p: IPrefix) => {
+            this.prefixes.code[_p.id] = _p.code;
+            this.prefixes.countryId[_p.id] = _p.countryId;
+            this.prefixes.operatorId[_p.id] = _p.operatorId;
+          });
         }
       });
   }
@@ -137,6 +185,23 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.dataFound = false;
         } else {
           this.dataFound = true;
+          _callRecords.map((_cr: ICallRecord) => {
+            _cr.prefix = {
+              id: _cr.prefixId,
+              code: this.prefixes.code[_cr.prefixId],
+              countryId: this.prefixes.countryId[_cr.prefixId],
+              operatorId: this.prefixes.operatorId[_cr.prefixId],
+            };
+            _cr.prefix.country = {
+              id: _cr.prefix.countryId,
+              name: this.countries.name[_cr.prefix.countryId],
+              code: this.countries.code[_cr.prefix.countryId],
+            };
+            _cr.prefix.operator = {
+              id: _cr.prefix.operatorId,
+              name: this.operators[_cr.prefix.operatorId],
+            };
+          });
         }
 
         this.callRecords = _callRecords;
@@ -150,11 +215,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       .countBy((x) => x.prefix.countryId)
       .map((count, name) => {
         let id = parseInt(name);
-        let _tempCountry = this.countries.find((_cr: ICountry) => _cr.id == id);
+        // let _tempCountry = this.countries.find((_cr: ICountry) => _cr.id == id);
         return {
           id,
-          name: _tempCountry?.name,
-          code: _tempCountry?.code,
+          name: this.countries.name[id],
+          code: this.countries.code[id],
           total: count,
           // percentage: (100 * count) / this.callRecords.length,
         };

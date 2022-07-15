@@ -47,7 +47,6 @@ export class HomeService {
     prefixes.forEach((_p: IPrefix) => {
       prefixObj[_p.code] = _p.id;
     });
-    console.log(prefixObj);
 
     _createCallrecords.forEach((_ccr: ICallRecord) => {
       if (!prefixObj[_ccr.prefix as any]) {
@@ -106,26 +105,35 @@ export class HomeService {
       where = { date: { [Op.gt]: _date.start, [Op.lt]: _date.end } };
     }
 
-    return await this._callRecordModel.findAll({
+    const callRecords = await this._callRecordModel.findAll({
       where,
-      attributes: ['id', 'aParty', 'bParty', 'date', 'sessionTime'],
-      include: [
-        {
-          model: this._prefixModel,
-          attributes: ['id', 'code', 'countryId', 'operatorId'],
-          include: [
-            {
-              model: this._countryModel,
-              attributes: ['name', 'code'],
-            },
-            {
-              model: this._operatorModel,
-              attributes: ['name'],
-            },
-          ],
-        },
+      attributes: [
+        // 'id',
+        'aParty',
+        'bParty',
+        'date',
+        'sessionTime',
+        'prefixId',
       ],
+      // include: [
+      //   {
+      //     model: this._prefixModel,
+      //     attributes: ['id', 'code', 'countryId', 'operatorId'],
+      //     // include: [
+      //     //   {
+      //     //     model: this._countryModel,
+      //     //     attributes: ['name', 'code'],
+      //     //   },
+      //     //   {
+      //     //     model: this._operatorModel,
+      //     //     attributes: ['name'],
+      //     //   },
+      //     // ],
+      //   },
+      // ],
     });
+
+    return callRecords;
   }
 
   // for creating prefix

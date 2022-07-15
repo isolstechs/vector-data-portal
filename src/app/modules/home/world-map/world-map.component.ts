@@ -32,7 +32,6 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     display: 'box',
   };
   countriesGraph: ICountryGraph[] = [];
-  countryCodeObject: any;
 
   private _takeUntil: Subject<null> = new Subject<null>();
   constructor(private _cd: ChangeDetectorRef, private _dialog: MatDialog) {}
@@ -59,7 +58,6 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     this.removeWorldMap('jvectormap-container');
     if (_data.length) {
       this.countriesGraph = _data;
-      this.countryCodeObject = Countries.CountryCodes;
       this.createWorldMap('world-map');
     }
   }
