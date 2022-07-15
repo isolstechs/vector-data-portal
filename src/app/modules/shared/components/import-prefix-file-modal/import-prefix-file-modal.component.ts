@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { HomeService } from '../../../home/services/home.service';
 import { IPrefixList } from '../../../interfaces/prefix-list.interface';
 import { MessageService } from '../../../services/core/message.service';
+import * as XLSX from 'xlsx/xlsx.mjs';
 
 @Component({
   selector: 'app-import-prefix-file-modal',
@@ -17,6 +18,8 @@ export class ImportPrefixFileModalComponent implements OnInit {
   fileSelect: boolean = false;
   showError: boolean = false;
   headingError: string = '';
+  dataFile: File;
+  ext: string;
 
   isLoading = false;
   prefixes!: IPrefixList[];
@@ -46,69 +49,104 @@ export class ImportPrefixFileModalComponent implements OnInit {
 
   onFileSelected(event: any) {
     this.headingError = '';
-    const file: File = event.target.files[0];
+    this.dataFile = event.target.files[0];
 
-    if (file) {
+    if (this.dataFile) {
       // saving file name for showing on input
-      this.fileName = file.name;
+      this.fileName = this.dataFile.name;
       this.fileSelect = true;
 
-      // checking file is csv or not
-      this.requiredFileType('csv');
-      if (this.showError) {
+      // checking file is csv, xlsx or not
+      this.ext = this.fileName.split('.')[1].toLowerCase();
+      if (this.ext != 'csv' && this.ext != 'xlsx') {
+        this.customError = 'Please choose CSV or XLSX file.';
+        this.showError = true;
         return;
+      } else {
+        this.customError = '';
+        this.showError = false;
       }
 
       // checking file name is lengthy or not
       if (this.fileName.length > 25) {
         this.fileName = this.fileName.slice(0, 25) + '...';
       }
-
-      // changing csv file into array
-      this.changeCSVFileToArray(file);
     }
   }
 
-  async save() {
-    if (!this.fileSelect || this.showError || !this.prefixes) {
+  // on uploading file
+  async upload() {
+    if (
+      !this.fileSelect ||
+      this.showError ||
+      (this.ext != 'csv' && this.ext != 'xlsx')
+    ) {
       return;
     }
-
     this.isLoading = true;
-    this.createPrefixes(this.prefixes);
-  }
 
-  private requiredFileType(_type: string): void {
-    const extension = this.fileName.split('.')[1].toLowerCase();
-    if (_type.toLowerCase() !== extension.toLowerCase()) {
-      this.customError = 'Please choose CSV file.';
-      this.showError = true;
-    } else {
-      this.customError = '';
-      this.showError = false;
+    // if selected file in csv format
+    if (this.ext == 'csv') {
+      this.changeCSVFileToData(this.dataFile);
+    } else if (this.ext == 'xlsx') {
+      // if selected file in xlsx format
+      await this.changeXLSXToCSV(this.dataFile);
     }
   }
 
-  private changeCSVFileToArray(_csvFile: any): void {
+  // changing xlsx file into csv data array
+  async changeXLSXToCSV(_file: any): Promise<void> {
+    // changing file into array buffer
+    const data = await _file.arrayBuffer();
+
+    // change buffer into xlsx array data
+    var workbook = XLSX.read(data, { type: 'array' });
+
+    // select firstSheet from the xlsx array data
+    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    // change sheet to csv data
+    var result = XLSX.utils.sheet_to_csv(firstSheet, { header: 1 });
+
+    // changing csv data to array
+    this.changeCSVDataToArray(result);
+  }
+
+  // changing csv file into csv data array
+  private changeCSVFileToData(_csvFile: any): void {
     const reader = new FileReader();
     reader.readAsText(_csvFile);
+
     reader.onload = (event: any) => {
       const csv = event.target.result; // Content of CSV file
-      this._papa.parse(csv, {
-        skipEmptyLines: true,
-        header: true,
-
-        transformHeader: (_h) => {
-          return _h.toLowerCase();
-        },
-        complete: (results: any) => {
-          this.checkingHeaders(results.data[0]);
-          this.prefixes = results.data;
-
-          console.log(this.prefixes);
-        },
-      });
+      // changing csv data to array
+      this.changeCSVDataToArray(csv);
     };
+  }
+
+  private changeCSVDataToArray(_data: any): void {
+    this._papa.parse(_data, {
+      skipEmptyLines: true,
+      header: true,
+
+      transformHeader: (_h) => {
+        return _h.toLowerCase();
+      },
+      complete: (results: any) => {
+        this.checkingHeaders(results.data[0]);
+
+        // checking header error
+        if (this.headingError.length) {
+          this.isLoading = false;
+          return;
+        }
+
+        this.prefixes = results.data;
+        console.log(this.prefixes);
+
+        this.createPrefixes(this.prefixes);
+      },
+    });
   }
 
   private checkingHeaders(_p: IPrefixList): void {
@@ -135,12 +173,11 @@ export class ImportPrefixFileModalComponent implements OnInit {
   }
 
   private createPrefixes(_prefixes: IPrefixList[]) {
-    this.isLoading = true;
     this._homeService.createPrefixes(_prefixes).subscribe(
       (_prefixes: IPrefixList[]) => {
         this._messageService.raiseMessage(
           'success',
-          'Prefix successfully created'
+          'Prefixes successfully created'
         );
 
         this.isLoading = false;

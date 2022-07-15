@@ -3,8 +3,12 @@
     <!-- Countries: {{ difference }} -->
 
     <!-- begin: import prefix button -->
-    <span class="import-file-button" (click)="createPrefixesModal()">
-      <mat-icon>add_circle</mat-icon>
+    <span
+      [class.disabled]="isLoading"
+      class="import-file-button"
+      (click)="createPrefixesModal()"
+    >
+      Import Prefixes
     </span>
     <!-- end: import prefix button -->
   </div>

@@ -22,7 +22,7 @@ declare var jQuery: any;
   styleUrls: ['./world-map.component.scss'],
 })
 export class WorldMapComponent implements OnInit, OnDestroy {
-  @Input() difference: string;
+  @Input() isLoading: string;
   @Output() exportEmitter: EventEmitter<string> = new EventEmitter();
 
   dataFound: boolean;

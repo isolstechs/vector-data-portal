@@ -22,6 +22,7 @@ export class CustomDateRangeMenuComponent implements OnInit {
   @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger;
 
   @Input() hideTodayYesterday: boolean;
+  @Input() isLoading: boolean;
   @Input() showDropdownButtonOrText: 'button' | 'text';
   @Output() dateRangeEmitter: EventEmitter<any> = new EventEmitter();
 

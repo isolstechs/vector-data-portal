@@ -22,6 +22,7 @@ import * as ChartDataLabels from 'chartjs-plugin-datalabels';
 })
 export class SideBarComponent implements OnInit, OnDestroy {
   @Input() difference: string;
+  @Input() isLoading: boolean;
   @Output() dateEmitter: EventEmitter<IDate> = new EventEmitter();
   @Output() exportEmitter: EventEmitter<string> = new EventEmitter();
 
@@ -110,8 +111,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
             enabled: true,
             displayColors: false,
             callbacks: {
-              label: (context, coordinates) => {
-                console.log(coordinates);
+              label: (context) => {
                 const tooltipValuesObject = this.getTooltipValue(context.label);
                 const value: string[] = [];
                 value[0] =

@@ -31,6 +31,7 @@ export class HomeService {
   // for creating call records
   async create(_createCallrecords: ICallRecord[]) {
     let promiseArray = [];
+    let count = 0;
     let callRecords: ICallRecord[] = [];
     let prefixObj = {};
     let prefixCodes = _createCallrecords.map(
@@ -63,36 +64,17 @@ export class HomeService {
       });
     });
 
-    promiseArray.push(
-      this._callRecordModel.bulkCreate(
-        callRecords.slice(0, callRecords.length / 4) as any
-      )
-    );
-    promiseArray.push(
-      this._callRecordModel.bulkCreate(
-        callRecords.slice(
-          callRecords.length / 4 + 1,
-          (callRecords.length / 4) * 2
-        ) as any
-      )
-    );
-    promiseArray.push(
-      this._callRecordModel.bulkCreate(
-        callRecords.slice(
-          (callRecords.length / 4) * 2 + 1,
-          (callRecords.length / 4) * 3
-        ) as any
-      )
-    );
+    let i = 0;
+    while (count <= callRecords.length) {
+      promiseArray.push(
+        this._callRecordModel.bulkCreate(
+          callRecords.slice(count, (i + 1) * 10000) as any
+        )
+      );
 
-    promiseArray.push(
-      this._callRecordModel.bulkCreate(
-        callRecords.slice(
-          (callRecords.length / 4) * 3 + 1,
-          callRecords.length
-        ) as any
-      )
-    );
+      count += 10000;
+      ++i;
+    }
 
     await Promise.all(promiseArray);
   }
@@ -100,38 +82,20 @@ export class HomeService {
   // for finding call records
   async findAll(_date: IDate): Promise<any> {
     let where;
+    let callRecords;
 
     if (_date.start != 'all') {
       where = { date: { [Op.gt]: _date.start, [Op.lt]: _date.end } };
     }
 
-    const callRecords = await this._callRecordModel.findAll({
-      where,
-      attributes: [
-        // 'id',
-        'aParty',
-        'bParty',
-        'date',
-        'sessionTime',
-        'prefixId',
-      ],
-      // include: [
-      //   {
-      //     model: this._prefixModel,
-      //     attributes: ['id', 'code', 'countryId', 'operatorId'],
-      //     // include: [
-      //     //   {
-      //     //     model: this._countryModel,
-      //     //     attributes: ['name', 'code'],
-      //     //   },
-      //     //   {
-      //     //     model: this._operatorModel,
-      //     //     attributes: ['name'],
-      //     //   },
-      //     // ],
-      //   },
-      // ],
-    });
+    try {
+      callRecords = await this._callRecordModel.findAll({
+        where,
+        attributes: ['aParty', 'bParty', 'date', 'sessionTime', 'prefixId'],
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
     return callRecords;
   }

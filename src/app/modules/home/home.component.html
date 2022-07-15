@@ -1,15 +1,19 @@
 <div>
   <app-header></app-header>
+  <ng-container *ngIf="isLoading">
+    <mat-progress-bar mode="query"></mat-progress-bar
+  ></ng-container>
   <div class="row">
     <app-side-bar
       class="col-md-3"
       [difference]="difference"
+      [isLoading]="isLoading"
       (dateEmitter)="changeDate($event)"
       (exportEmitter)="openExportFileModal($event)"
     ></app-side-bar>
     <app-world-map
       class="col-md-9"
-      [difference]="difference"
+      [isLoading]="isLoading"
       (exportEmitter)="openExportFileModal($event)"
     ></app-world-map>
   </div>

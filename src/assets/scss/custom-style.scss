@@ -42,14 +42,12 @@
 
 // for custom import file button styling for prefix and call records
 .import-file-button {
-  position: relative;
-  mat-icon {
-    top: 2px;
-    font-size: 17px;
-    position: absolute;
-    right: -7px;
-    cursor: pointer;
-  }
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.import-file-button:hover {
+  text-decoration: none;
 }
 
 .mat-snack-bar-container {

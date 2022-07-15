@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild(SideBarComponent) _sideBarComponent: SideBarComponent;
   @ViewChild(WorldMapComponent) _worldMapComponent: WorldMapComponent;
 
+  isLoading: boolean = false;
   initialCall: boolean = true;
   dataFound: boolean;
   date: IDate;
@@ -60,6 +61,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // changing date from sideBarComponent
   changeDate(_date: IDate): void {
+    // selecting new date or not
+    if (this.date == _date) {
+      return;
+    }
+
     if (_date.start == 'all') {
       this.date = _date;
 
@@ -177,6 +183,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // getting call records array according to given date
   private getCountriesCallRecrods(): void {
+    this.isLoading = true;
     this._homeService
       .getCallRecords(this.date)
       .pipe(takeUntil(this._takeUntil))
@@ -206,6 +213,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.callRecords = _callRecords;
         this.changeCallRecordsToGraphData();
+        this.isLoading = false;
       });
   }
 
@@ -250,7 +258,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // showing differnce between start and end date
   private calcDate(date1: Date, date2: Date) {
-    if (date1.toDateString() == date2.toDateString()) {
+    const d = new Date().setHours(0, 0, 0, 0);
+    if (d == _.cloneDeep(date1).setHours(0, 0, 0, 0)) {
       this.difference = 'Today';
       return;
     }

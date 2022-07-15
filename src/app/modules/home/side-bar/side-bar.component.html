@@ -12,6 +12,7 @@
       <span>
         <app-custom-date-range-menu
           class="col-sm-2"
+          [isLoading]="isLoading"
           [hideTodayYesterday]="false"
           [showDropdownButtonOrText]="'button'"
           (dateRangeEmitter)="dateRangeChanged($event)"
@@ -21,8 +22,12 @@
     </div>
 
     <!-- begin: import call reocrds button -->
-    <span class="import-file-button" (click)="createCallRecordsModal()">
-      <mat-icon>add_circle</mat-icon>
+    <span
+      [class.disabled]="isLoading"
+      class="import-file-button"
+      (click)="createCallRecordsModal()"
+    >
+      Import Call Records
     </span>
     <!-- end: import call reocrds button -->
   </div>
