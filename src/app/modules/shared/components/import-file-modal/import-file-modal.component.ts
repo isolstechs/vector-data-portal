@@ -185,7 +185,9 @@ export class ImportFileModalComponent implements OnInit {
             _cl.date.slice(3, 5) +
             'T' +
             _cl.date.slice(11, _cl.date.length) +
-            ':00Z';
+            ':00.000Z';
+
+          // _cl.date = new Date(_cl.date) as any;
         });
 
         console.log(this.callRecords);

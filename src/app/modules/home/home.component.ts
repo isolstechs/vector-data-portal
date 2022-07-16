@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     code: {},
   };
   prefixes = {
-    code: {},
+    prefix: {},
     operatorId: {},
     countryId: {},
   };
@@ -50,8 +50,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getCountries();
-    this.getOperators();
-    this.getPrefixes();
+    // this.getOperators();
+    // this.getPrefixes();
   }
 
   ngOnDestroy(): void {
@@ -108,7 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       ['Destination Name', 'A Party', 'B Party', 'Date', 'Session Time'],
       ...this.callRecords
         .filter((_cr: ICallRecord) => _cr.prefix?.country?.name == _countryName)
-        .map((_d: ICallRecord) => {
+        .map((_d) => {
           const tempDate = new Date(_d.date) as any;
           tempDate.setSeconds(0, 0) as any;
           _d.date = tempDate
@@ -173,7 +173,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe((_prefixes: IPrefix[]) => {
         if (_prefixes.length) {
           _prefixes.forEach((_p: IPrefix) => {
-            this.prefixes.code[_p.id] = _p.code;
+            this.prefixes.prefix[_p.id] = _p.prefix;
             this.prefixes.countryId[_p.id] = _p.countryId;
             this.prefixes.operatorId[_p.id] = _p.operatorId;
           });
@@ -192,26 +192,27 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.dataFound = false;
         } else {
           this.dataFound = true;
-          _callRecords.map((_cr: ICallRecord) => {
-            _cr.prefix = {
-              id: _cr.prefixId,
-              code: this.prefixes.code[_cr.prefixId],
-              countryId: this.prefixes.countryId[_cr.prefixId],
-              operatorId: this.prefixes.operatorId[_cr.prefixId],
-            };
-            _cr.prefix.country = {
-              id: _cr.prefix.countryId,
-              name: this.countries.name[_cr.prefix.countryId],
-              code: this.countries.code[_cr.prefix.countryId],
-            };
-            _cr.prefix.operator = {
-              id: _cr.prefix.operatorId,
-              name: this.operators[_cr.prefix.operatorId],
-            };
-          });
+          // _callRecords.map((_cr: ICallRecord) => {
+          //   _cr.prefix = {
+          //     id: _cr.prefixId,
+          //     prefix: this.prefixes.prefix[_cr.prefixId],
+          //     countryId: this.prefixes.countryId[_cr.prefixId],
+          //     operatorId: this.prefixes.operatorId[_cr.prefixId],
+          //   };
+          //   _cr.prefix.country = {
+          //     id: _cr.prefix.countryId,
+          //     name: this.countries.name[_cr.prefix.countryId],
+          //     code: this.countries.code[_cr.prefix.countryId],
+          //   };
+          //   _cr.prefix.operator = {
+          //     id: _cr.prefix.operatorId,
+          //     name: this.operators[_cr.prefix.operatorId],
+          //   };
+          // });
         }
 
-        this.callRecords = _callRecords;
+        this.callRecords = _.orderBy(_callRecords, 'date', 'desc');
+        console.log(this.callRecords);
         this.changeCallRecordsToGraphData();
         this.isLoading = false;
       });

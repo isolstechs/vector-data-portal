@@ -22,8 +22,11 @@ export class PrefixModel extends Model {
   })
   id: number;
 
-  @Column({ type: DataType.INTEGER, unique: true })
-  code: number;
+  @Column({
+    type: DataType.INTEGER,
+    // unique: true
+  })
+  prefix: number;
 
   // relationship with CountryModel
   @ForeignKey(() => CountryModel)

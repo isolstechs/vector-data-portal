@@ -6,6 +6,7 @@ import { HomeService } from '../../../home/services/home.service';
 import { IPrefixList } from '../../../interfaces/prefix-list.interface';
 import { MessageService } from '../../../services/core/message.service';
 import * as XLSX from 'xlsx/xlsx.mjs';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-import-prefix-file-modal',
@@ -141,6 +142,9 @@ export class ImportPrefixFileModalComponent implements OnInit {
           return;
         }
 
+        _.remove(results.data, (p: IPrefixList) => {
+          return p.country.toLowerCase() == p.operator.toLowerCase();
+        });
         this.prefixes = results.data;
         console.log(this.prefixes);
 

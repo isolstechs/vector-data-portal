@@ -29,7 +29,7 @@ export class AppService {
 
   async getPrefixes(): Promise<any> {
     return this._prefixModel.findAll({
-      attributes: ['id', 'code', 'countryId', 'operatorId'],
+      attributes: ['id', 'prefix', 'countryId', 'operatorId'],
     });
   }
 }

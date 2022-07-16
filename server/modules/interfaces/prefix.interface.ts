@@ -3,7 +3,7 @@ import { IOperator } from './operator.interface';
 
 export interface IPrefix {
   id?: number;
-  code: number;
+  prefix: number;
 
   countryId: number;
   operatorId: number;

@@ -8,6 +8,7 @@
 // import { IOperator } from 'server/modules/interfaces/operator.interface';
 // import { countryList } from '../../../modules/home/country-list';
 // import { IPrefixList } from 'server/modules/interfaces/prefix-list.interface';
+// import { sriLanka } from './srilanka';
 
 export const seed = async () => {
   // let promiseArray = [];
