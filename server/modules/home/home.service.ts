@@ -90,16 +90,16 @@ export class HomeService {
       callRecords = await this._callRecordModel.findAll({
         where,
         attributes: ['aParty', 'bParty', 'date', 'sessionTime', 'prefixId'],
-        include: [
-          {
-            model: this._prefixModel,
-            attributes: ['prefix', 'countryId'],
-            include: [
-              { model: this._operatorModel, attributes: ['name'] },
-              { model: this._countryModel, attributes: ['name', 'code'] },
-            ],
-          },
-        ],
+        // include: [
+        //   {
+        //     model: this._prefixModel,
+        //     attributes: ['prefix', 'countryId'],
+        //     include: [
+        //       { model: this._operatorModel, attributes: ['name'] },
+        //       { model: this._countryModel, attributes: ['name', 'code'] },
+        //     ],
+        //   },
+        // ],
       });
     } catch (error) {
       console.log(error);
@@ -170,35 +170,34 @@ export class HomeService {
     const prefixesToBeSaved = [];
     let prefixes = [];
     _prefixData.forEach((_p) => {
-      prefixes.push({
-        prefix: _p.prefix,
-        countryId: countriesObj[_p.country],
-        operatorId: operatorsObj[_p.operator],
-      });
-      // prefixesToBeSaved.push(
-      //   this._prefixModel.findOrCreate({
-      //     where: {
-      //       prefix: _p.prefix,
-      //       countryId: countriesObj[_p.country],
-      //       operatorId: operatorsObj[_p.operator],
-      //     },
-      //   })
-      // );
+      // prefixes.push({
+      //   prefix: _p.prefix,
+      //   countryId: countriesObj[_p.country],
+      //   operatorId: operatorsObj[_p.operator],
+      // });
+      prefixesToBeSaved.push(
+        this._prefixModel.findOrCreate({
+          where: {
+            prefix: _p.prefix,
+            countryId: countriesObj[_p.country],
+            operatorId: operatorsObj[_p.operator],
+          },
+        })
+      );
     });
 
-    console.log(prefixes.filter((_p) => _p.prefix == '2147483647'));
-    let count = 0;
-    let i = 0;
-    while (count <= prefixes.length) {
-      prefixesToBeSaved.push(
-        this._prefixModel.bulkCreate(
-          prefixes.slice(count, (i + 1) * 10000) as any
-        )
-      );
+    // let count = 0;
+    // let i = 0;
+    // while (count <= prefixes.length) {
+    //   prefixesToBeSaved.push(
+    //     this._prefixModel.bulkCreate(
+    //       prefixes.slice(count, (i + 1) * 10000) as any
+    //     )
+    //   );
 
-      count += 10000;
-      ++i;
-    }
+    //   count += 10000;
+    //   ++i;
+    // }
     await Promise.all(prefixesToBeSaved);
   }
 }

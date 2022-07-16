@@ -50,8 +50,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getCountries();
-    // this.getOperators();
-    // this.getPrefixes();
+    this.getOperators();
+    this.getPrefixes();
   }
 
   ngOnDestroy(): void {
@@ -192,23 +192,23 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.dataFound = false;
         } else {
           this.dataFound = true;
-          // _callRecords.map((_cr: ICallRecord) => {
-          //   _cr.prefix = {
-          //     id: _cr.prefixId,
-          //     prefix: this.prefixes.prefix[_cr.prefixId],
-          //     countryId: this.prefixes.countryId[_cr.prefixId],
-          //     operatorId: this.prefixes.operatorId[_cr.prefixId],
-          //   };
-          //   _cr.prefix.country = {
-          //     id: _cr.prefix.countryId,
-          //     name: this.countries.name[_cr.prefix.countryId],
-          //     code: this.countries.code[_cr.prefix.countryId],
-          //   };
-          //   _cr.prefix.operator = {
-          //     id: _cr.prefix.operatorId,
-          //     name: this.operators[_cr.prefix.operatorId],
-          //   };
-          // });
+          _callRecords.map((_cr: ICallRecord) => {
+            _cr.prefix = {
+              id: _cr.prefixId,
+              prefix: this.prefixes.prefix[_cr.prefixId],
+              countryId: this.prefixes.countryId[_cr.prefixId],
+              operatorId: this.prefixes.operatorId[_cr.prefixId],
+            };
+            _cr.prefix.country = {
+              id: _cr.prefix.countryId,
+              name: this.countries.name[_cr.prefix.countryId],
+              code: this.countries.code[_cr.prefix.countryId],
+            };
+            _cr.prefix.operator = {
+              id: _cr.prefix.operatorId,
+              name: this.operators[_cr.prefix.operatorId],
+            };
+          });
         }
 
         this.callRecords = _.orderBy(_callRecords, 'date', 'desc');
