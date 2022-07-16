@@ -188,7 +188,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getCallRecords(this.date)
       .pipe(takeUntil(this._takeUntil))
       .subscribe((_callRecords: ICallRecord[]) => {
-        if (!_callRecords.length) {
+        if (!_callRecords?.length) {
           this.dataFound = false;
         } else {
           this.dataFound = true;
