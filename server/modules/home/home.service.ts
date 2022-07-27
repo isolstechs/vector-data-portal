@@ -38,7 +38,7 @@ export class HomeService {
       (_ccr: ICallRecord) => _ccr.prefix
     );
 
-    const prefixes = await this._prefixModel.findAll({
+    const prefixes: any = await this._prefixModel.findAll({
       where: { prefix: { [Op.in]: prefixCodes } },
       attributes: ['id', 'prefix'],
       raw: true,
@@ -116,6 +116,24 @@ export class HomeService {
     let operators: IOperator[] = [];
     let previousCountry: string;
 
+    // getting coming prefixes from db, if available we will filter them
+    const prefixesFromDb = await PrefixModel.findAll({
+      where: {
+        prefix: {
+          [Op.in]: _prefixData.map((_p) => _p.prefix),
+        },
+      },
+    });
+
+    // creating prefixes obj
+    const prefixesLookupObj = _.keyBy(prefixesFromDb, function (o) {
+      return o.prefix;
+    });
+
+    _prefixData = _.filter(_prefixData, function (u) {
+      return prefixesLookupObj[u.prefix] == undefined;
+    });
+
     _prefixData.forEach((_p: IPrefixList) => {
       // saving country if new than previous one
       _p.country = _p.country.toLowerCase();
@@ -133,7 +151,7 @@ export class HomeService {
     });
 
     operators = _.uniqBy(operators, 'name');
-    countries = _.uniqBy(countries, 'name');
+    // countries = _.uniqBy(countries, 'name');
 
     operators.forEach((_o) => {
       operatorPrimiseArray.push(
@@ -152,52 +170,48 @@ export class HomeService {
     });
 
     const operatorsResults = await Promise.all(operatorPrimiseArray);
-    const countriesResults = await Promise.all(countryPrimiseArray);
+    let countriesResults;
+    try {
+      countriesResults = await Promise.all(countryPrimiseArray);
+    } catch (error) {
+      if (
+        error.message == 'WHERE parameter "code" has invalid "undefined" value'
+      ) {
+        throw new NotImplementedException(
+          'Does not found provided country(s) in the database. Please check country list to confirm provided country names matches countries in the database'
+        );
+      }
 
-    const operatorsObj = {};
-    const countriesObj = {};
+      throw new NotImplementedException('Error! Cannot create country');
+    }
 
-    operatorsResults.forEach(([_operator, _c]) => {
-      const operatorVals = _operator?.dataValues;
-      operatorsObj[operatorVals.name] = operatorVals.id;
+    const operatorsObj = _.keyBy(operatorsResults, function (_o) {
+      return _o[0]?.name;
     });
 
-    countriesResults.forEach(([_country, _c]) => {
-      const countryVals = _country?.dataValues;
-      countriesObj[countryVals.name] = countryVals.id;
+    const countriesObj = _.keyBy(countriesResults, function (_o) {
+      return _o[0]?.name;
     });
+
+    // creating operators object
+    // operatorsResults.forEach(([_operator, _c]) => {
+    //   operatorsObj[_operator?.dataValues.name] = _operator?.dataValues.id;
+    // });
+
+    // creating countries object
+    // countriesResults.forEach(([_country, _c]) => {
+    //   countriesObj[_country?.dataValues.name] = _country?.dataValues.id;
+    // });
 
     const prefixesToBeSaved = [];
-    let prefixes = [];
     _prefixData.forEach((_p) => {
-      // prefixes.push({
-      //   prefix: _p.prefix,
-      //   countryId: countriesObj[_p.country],
-      //   operatorId: operatorsObj[_p.operator],
-      // });
-      prefixesToBeSaved.push(
-        this._prefixModel.findOrCreate({
-          where: {
-            prefix: _p.prefix,
-            countryId: countriesObj[_p.country],
-            operatorId: operatorsObj[_p.operator],
-          },
-        })
-      );
+      prefixesToBeSaved.push({
+        prefix: _p.prefix,
+        countryId: countriesObj[_p.country][0]?.id,
+        operatorId: operatorsObj[_p.operator][0]?.id,
+      });
     });
 
-    // let count = 0;
-    // let i = 0;
-    // while (count <= prefixes.length) {
-    //   prefixesToBeSaved.push(
-    //     this._prefixModel.bulkCreate(
-    //       prefixes.slice(count, (i + 1) * 10000) as any
-    //     )
-    //   );
-
-    //   count += 10000;
-    //   ++i;
-    // }
-    await Promise.all(prefixesToBeSaved);
+    await PrefixModel.bulkCreate(prefixesToBeSaved);
   }
 }

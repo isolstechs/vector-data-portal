@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Papa } from 'ngx-papaparse';
 import { Subject } from 'rxjs';
 import { HomeService } from '../../../home/services/home.service';
@@ -7,6 +7,7 @@ import { IPrefixList } from '../../../interfaces/prefix-list.interface';
 import { MessageService } from '../../../services/core/message.service';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import * as _ from 'lodash';
+import { CountryListModalComponent } from '../country-list-modal/country-list-modal.component';
 
 @Component({
   selector: 'app-import-prefix-file-modal',
@@ -32,7 +33,8 @@ export class ImportPrefixFileModalComponent implements OnInit {
     private _messageService: MessageService,
     private _papa: Papa,
     private _homeService: HomeService,
-    private _cd: ChangeDetectorRef
+    private _cd: ChangeDetectorRef,
+    private _dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -86,13 +88,14 @@ export class ImportPrefixFileModalComponent implements OnInit {
     }
     this.isLoading = true;
 
-    // if selected file in csv format
-    if (this.ext == 'csv') {
-      this.changeCSVFileToData(this.dataFile);
-    } else if (this.ext == 'xlsx') {
-      // if selected file in xlsx format
-      await this.changeXLSXToCSV(this.dataFile);
+    let csvFile: any = this.dataFile;
+
+    // if xlsx file then first we updated it to csv
+    if (this.ext == 'xlsx') {
+      csvFile = await this.changeXLSXToCSV(this.dataFile);
     }
+
+    this.changeCSVFileToData(csvFile);
   }
 
   // changing xlsx file into csv data array
@@ -101,16 +104,13 @@ export class ImportPrefixFileModalComponent implements OnInit {
     const data = await _file.arrayBuffer();
 
     // change buffer into xlsx array data
-    var workbook = XLSX.read(data, { type: 'array' });
+    const workbook = XLSX.read(data, { type: 'array' });
 
     // select firstSheet from the xlsx array data
-    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
     // change sheet to csv data
-    var result = XLSX.utils.sheet_to_csv(firstSheet, { header: 1 });
-
-    // changing csv data to array
-    this.changeCSVDataToArray(result);
+    return XLSX.utils.sheet_to_csv(firstSheet, { header: 1 });
   }
 
   // changing csv file into csv data array
@@ -145,6 +145,10 @@ export class ImportPrefixFileModalComponent implements OnInit {
         _.remove(results.data, (p: IPrefixList) => {
           return p.country.toLowerCase() == p.operator.toLowerCase();
         });
+
+        debugger;
+
+        results.data = _.uniqBy(results.data, 'prefix');
         this.prefixes = results.data;
         console.log(this.prefixes);
 
@@ -192,5 +196,12 @@ export class ImportPrefixFileModalComponent implements OnInit {
         this.isLoading = false;
       }
     );
+  }
+
+  // open modal for creating new call records
+  createCountryListModal() {
+    this._dialog.open(CountryListModalComponent, {
+      width: '400px',
+    });
   }
 }

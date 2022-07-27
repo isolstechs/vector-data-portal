@@ -12,6 +12,7 @@ import { ChartModule } from 'primeng/chart';
 import { SharedService } from './services/shared.service';
 import { ExportFileModalComponent } from './components/export-file-modal/export-file-modal.component';
 import { ImportPrefixFileModalComponent } from './components/import-prefix-file-modal/import-prefix-file-modal.component';
+import { CountryListModalComponent } from './components/country-list-modal/country-list-modal.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { ImportPrefixFileModalComponent } from './components/import-prefix-file-
     ImportPrefixFileModalComponent,
     ImportFileModalComponent,
     ExportFileModalComponent,
+    CountryListModalComponent,
   ],
   imports: [
     CommonModule,

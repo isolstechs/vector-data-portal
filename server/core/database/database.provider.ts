@@ -18,7 +18,7 @@ export const databaseProvider = [
         database: process.env['PROD_DB_NAME'] || 'vector-data-portal',
         dialect: 'mysql',
         username: process.env['PROD_USER_NAME'] || 'root',
-        password: process.env['PROD_DB_PASSWORD'] || '',
+        password: process.env['PROD_DB_PASSWORD'] || 'root',
         host: 'localhost',
         port: 3306,
         dialectModule: mysql2,

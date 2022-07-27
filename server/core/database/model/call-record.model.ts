@@ -12,7 +12,7 @@ import { PrefixModel } from './prefix.model';
 @Table({ modelName: 'call-record' })
 export class CallRecordModel extends Model {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.BIGINT,
     allowNull: false,
     primaryKey: true,
     autoIncrement: true,
