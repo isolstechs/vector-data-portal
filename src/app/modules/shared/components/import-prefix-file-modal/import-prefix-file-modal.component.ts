@@ -62,11 +62,11 @@ export class ImportPrefixFileModalComponent implements OnInit {
       // checking file is csv, xlsx or not
       this.ext = this.fileName.split('.')[1].toLowerCase();
       if (this.ext != 'csv' && this.ext != 'xlsx') {
-        this.customError = 'Please choose CSV or XLSX file.';
+        this.headingError = 'Please choose CSV or XLSX file.';
         this.showError = true;
         return;
       } else {
-        this.customError = '';
+        this.headingError = '';
         this.showError = false;
       }
 
@@ -88,18 +88,17 @@ export class ImportPrefixFileModalComponent implements OnInit {
     }
     this.isLoading = true;
 
-    let csvFile: any = this.dataFile;
-
-    // if xlsx file then first we updated it to csv
-    if (this.ext == 'xlsx') {
-      csvFile = await this.changeXLSXToCSV(this.dataFile);
+    // if selected file in csv format
+    if (this.ext == 'csv') {
+      this.changeCSVFileToData(this.dataFile);
+    } else if (this.ext == 'xlsx') {
+      // if selected file in xlsx format
+      await this.changeXLSXToCSV(this.dataFile);
     }
-
-    this.changeCSVFileToData(csvFile);
   }
 
   // changing xlsx file into csv data array
-  async changeXLSXToCSV(_file: any): Promise<void> {
+  async changeXLSXToCSV(_file: any): Promise<any> {
     // changing file into array buffer
     const data = await _file.arrayBuffer();
 
@@ -110,7 +109,10 @@ export class ImportPrefixFileModalComponent implements OnInit {
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
     // change sheet to csv data
-    return XLSX.utils.sheet_to_csv(firstSheet, { header: 1 });
+    const result = XLSX.utils.sheet_to_csv(firstSheet, { header: 1 });
+
+    // changing csv data to array
+    this.changeCSVDataToArray(result);
   }
 
   // changing csv file into csv data array
@@ -146,11 +148,8 @@ export class ImportPrefixFileModalComponent implements OnInit {
           return p.country.toLowerCase() == p.operator.toLowerCase();
         });
 
-        debugger;
-
         results.data = _.uniqBy(results.data, 'prefix');
         this.prefixes = results.data;
-        console.log(this.prefixes);
 
         this.createPrefixes(this.prefixes);
       },
@@ -158,25 +157,20 @@ export class ImportPrefixFileModalComponent implements OnInit {
   }
 
   private checkingHeaders(_p: IPrefixList): void {
-    let i = 0;
-    this.headingError = 'Could not found:';
+    this.showError = true;
+    this.headingError = 'Could not found header: ';
 
-    _p.hasOwnProperty('country')
-      ? i++
-      : (this.headingError = this.headingError + `Country.`);
-    _p.hasOwnProperty('operator')
-      ? i++
-      : (this.headingError = this.headingError + 'Operator.');
-    _p.hasOwnProperty('prefix')
-      ? i++
-      : (this.headingError = this.headingError + 'Prefix.');
-
-    if (i < 3) {
-      this.customError = 'Please give the appropriate Headers!';
-      this.showError = true;
+    if (!_p.hasOwnProperty('country')) {
+      this.headingError = this.headingError + `Country.`;
+    } else if (!_p.hasOwnProperty('operator')) {
+      this.headingError = this.headingError + 'Operator.';
+    } else if (!_p.hasOwnProperty('prefix')) {
+      this.headingError = this.headingError + 'Prefix.';
     } else {
+      this.showError = false;
       this.headingError = '';
     }
+
     this._cd.detectChanges();
   }
 
@@ -192,7 +186,7 @@ export class ImportPrefixFileModalComponent implements OnInit {
         this._dialogRef.close(true);
       },
       (_err) => {
-        this._messageService.raiseMessage('error', _err);
+        this._messageService.raiseMessage('error', _err, 'OK', 20);
         this.isLoading = false;
       }
     );

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { ICallRecord } from '../interfaces/call-record.interface';
 import { ICountryGraph } from '../interfaces/country-graph.interface';
 import { ICountry } from '../interfaces/country.interface';
@@ -28,17 +28,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   dataFound: boolean;
   date: IDate;
   difference: string;
-  countriesGraph: ICountryGraph[];
+  countriesGraphData: ICountryGraph[];
   operators = {};
-  countries = {
-    name: {},
-    code: {},
-  };
-  prefixes = {
-    prefix: {},
-    operatorId: {},
-    countryId: {},
-  };
+  countries = {};
+  prefixes = {};
   callRecords: ICallRecord[];
 
   private _takeUntil: Subject<null> = new Subject<null>();
@@ -142,10 +135,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getCountries()
       .pipe(takeUntil(this._takeUntil))
       .subscribe((_countries: ICountry[]) => {
+        this.countries = {};
         if (_countries.length) {
           _countries.forEach((_c: ICountry) => {
-            this.countries.name[_c.id] = _c.name;
-            this.countries.code[_c.id] = _c.code;
+            this.countries[_c.id] = { name: _c.name, code: _c.code };
           });
         }
       });
@@ -157,6 +150,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getOperators()
       .pipe(takeUntil(this._takeUntil))
       .subscribe((_operators: IOperator[]) => {
+        this.operators = {};
         if (_operators.length) {
           _operators.forEach((_o: IOperator) => {
             this.operators[_o.id] = _o.name;
@@ -171,11 +165,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       .getPrefixes()
       .pipe(takeUntil(this._takeUntil))
       .subscribe((_prefixes: IPrefix[]) => {
+        this.prefixes = {};
         if (_prefixes.length) {
           _prefixes.forEach((_p: IPrefix) => {
-            this.prefixes.prefix[_p.id] = _p.prefix;
-            this.prefixes.countryId[_p.id] = _p.countryId;
-            this.prefixes.operatorId[_p.id] = _p.operatorId;
+            this.prefixes[_p.id] = {
+              prefix: _p.prefix,
+              countryId: _p.countryId,
+              operatorId: _p.operatorId,
+            };
           });
         }
       });
@@ -192,17 +189,17 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.dataFound = false;
         } else {
           this.dataFound = true;
-          _callRecords.map((_cr: ICallRecord) => {
+          _callRecords.forEach((_cr: ICallRecord) => {
             _cr.prefix = {
               id: _cr.prefixId,
-              prefix: this.prefixes.prefix[_cr.prefixId],
-              countryId: this.prefixes.countryId[_cr.prefixId],
-              operatorId: this.prefixes.operatorId[_cr.prefixId],
+              prefix: this.prefixes[_cr.prefixId].prefix,
+              countryId: this.prefixes[_cr.prefixId].countryId,
+              operatorId: this.prefixes[_cr.prefixId].operatorId,
             };
             _cr.prefix.country = {
               id: _cr.prefix.countryId,
-              name: this.countries.name[_cr.prefix.countryId],
-              code: this.countries.code[_cr.prefix.countryId],
+              name: this.countries[_cr.prefix.countryId].name,
+              code: this.countries[_cr.prefix.countryId].code,
             };
             _cr.prefix.operator = {
               id: _cr.prefix.operatorId,
@@ -220,22 +217,30 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // changing call records to countries graph
   private changeCallRecordsToGraphData(): void {
-    const tempCountriesGraph = _(this.callRecords)
-      .countBy((x) => x.prefix.countryId)
-      .map((count, name) => {
-        let id = parseInt(name);
-        // let _tempCountry = this.countries.find((_cr: ICountry) => _cr.id == id);
+    let tempCountriesGraph = _(this.callRecords)
+      .groupBy((x) => x.prefix.countryId)
+      .map((_vals: any[], _countryId) => {
+        // const trmType = { cc: 0, cli: 0, 'no-cli': 0 };
+        const trmType = {};
+        _(_vals)
+          .countBy('trmType')
+          .map((y, _countryId) => {
+            trmType[_countryId] = y;
+          })
+          .value();
+
+        const id = parseInt(_countryId);
         return {
           id,
-          name: this.countries.name[id],
-          code: this.countries.code[id],
-          total: count,
-          // percentage: (100 * count) / this.callRecords.length,
+          name: this.countries[id].name,
+          code: this.countries[id].code,
+          total: _vals?.length,
+          trmType,
         };
       })
       .value();
 
-    this.countriesGraph = tempCountriesGraph as any;
+    this.countriesGraphData = tempCountriesGraph as any;
 
     this.changeGraphOnSideBarComponent();
     this.changeGraphOnWorlMapComponent();
@@ -243,8 +248,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // calling fucntion on sideBarComponent to change countriesGraph
   private changeGraphOnSideBarComponent(): void {
-    this._sideBarComponent.initialingAndChangingGraphData(
-      this.countriesGraph,
+    this._sideBarComponent.initializingAndChangingGraphData(
+      this.countriesGraphData,
       this.dataFound
     );
   }
@@ -252,7 +257,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // calling fucntion on worlMapComponent to change countriesGraph
   private changeGraphOnWorlMapComponent(): void {
     this._worldMapComponent.initWorldMapData(
-      this.countriesGraph,
+      this.countriesGraphData,
       this.dataFound
     );
   }

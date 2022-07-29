@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
-import * as mysql2 from 'mysql2';
 import { SEQUELIZE } from '../constant/index.constant';
 import { seed } from './seed/db.seed';
+import * as pg from 'pg';
 import { CountryModel } from './model/country.model';
 import { OperatorModel } from './model/operator.model';
 import { CallRecordModel } from './model/call-record.model';
@@ -16,12 +16,12 @@ export const databaseProvider = [
     useFactory: async () => {
       const sequelize = new Sequelize({
         database: process.env['PROD_DB_NAME'] || 'vector-data-portal',
-        dialect: 'mysql',
-        username: process.env['PROD_USER_NAME'] || 'root',
+        dialect: 'postgres',
+        username: process.env['PROD_USER_NAME'] || 'postgres',
         password: process.env['PROD_DB_PASSWORD'] || 'root',
         host: 'localhost',
-        port: 3306,
-        dialectModule: mysql2,
+        port: 5432,
+        dialectModule: pg,
         define: {
           timestamps: false,
         },

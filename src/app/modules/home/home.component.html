@@ -1,8 +1,9 @@
 <div>
   <app-header></app-header>
-  <ng-container *ngIf="isLoading">
-    <mat-progress-bar mode="query"></mat-progress-bar
-  ></ng-container>
+  <div [hidden]="!isLoading">
+    <mat-progress-bar mode="query"></mat-progress-bar>
+  </div>
+  <div [hidden]="isLoading" style="height: 4px"></div>
   <div class="row">
     <app-side-bar
       class="col-md-3"

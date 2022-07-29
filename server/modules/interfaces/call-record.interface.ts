@@ -6,6 +6,7 @@ export interface ICallRecord {
   bParty: string;
   date: string;
   sessionTime: string;
+  trmType: string;
 
   prefixId: number;
   prefix?: IPrefix | number;

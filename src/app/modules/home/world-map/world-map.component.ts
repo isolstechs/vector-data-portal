@@ -2,10 +2,12 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
   Output,
+  PLATFORM_ID,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import * as _ from 'lodash';
@@ -13,6 +15,7 @@ import { Countries } from './world-map-countries';
 import { ICountryGraph } from '../../interfaces/country-graph.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { ImportPrefixFileModalComponent } from '../../shared/components/import-prefix-file-modal/import-prefix-file-modal.component';
+import { isPlatformBrowser } from '@angular/common';
 
 declare var jQuery: any;
 
@@ -34,7 +37,15 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   countriesGraph: ICountryGraph[] = [];
 
   private _takeUntil: Subject<null> = new Subject<null>();
-  constructor(private _cd: ChangeDetectorRef, private _dialog: MatDialog) {}
+  private isBrowser: boolean = false;
+  constructor(
+    private _cd: ChangeDetectorRef,
+    private _dialog: MatDialog,
+
+    @Inject(PLATFORM_ID) private platformId: any
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {}
 
@@ -156,10 +167,12 @@ export class WorldMapComponent implements OnInit, OnDestroy {
 
   // removing world map if available
   private removeWorldMap(className: string): void {
-    if (document as any) {
-      const elements = document.getElementsByClassName(className);
-      while (elements.length > 0) {
-        (elements[0] as any).parentNode.removeChild(elements[0]);
+    if (this.isBrowser) {
+      if (document as any) {
+        const elements = document.getElementsByClassName(className);
+        while (elements.length > 0) {
+          (elements[0] as any).parentNode.removeChild(elements[0]);
+        }
       }
     }
   }

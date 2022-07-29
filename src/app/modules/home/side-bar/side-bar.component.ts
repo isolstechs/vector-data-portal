@@ -12,8 +12,10 @@ import { ICountryGraph } from '../../interfaces/country-graph.interface';
 import * as _ from 'lodash';
 import { IDate } from '../../interfaces/date.interaface';
 import { MatDialog } from '@angular/material/dialog';
-import { ImportFileModalComponent } from '../../shared/components/import-file-modal/import-file-modal.component';
 import * as ChartDataLabels from 'chartjs-plugin-datalabels';
+import { ImportCallRecordsFileModalComponent } from '../../shared/components/import-call-records-file-modal/import-call-records-file-modal.component';
+
+declare var Chart: any;
 
 @Component({
   selector: 'app-side-bar',
@@ -55,7 +57,7 @@ export class SideBarComponent implements OnInit, OnDestroy {
   }
 
   // initializing and changing graph data from parent component
-  initialingAndChangingGraphData(
+  initializingAndChangingGraphData(
     _data: ICountryGraph[],
     _dataFound: boolean
   ): void {
@@ -65,14 +67,16 @@ export class SideBarComponent implements OnInit, OnDestroy {
     }
     this.dataFound = true;
     this.totalCalls = 0;
-    let total: number[] = [];
+    let dataSets: any = { cli: [], noCli: [], cc: [] };
     let countries: string[] = [];
     let height = 0;
 
     this.countriesGraph = _data;
     _.orderBy(_data, ['total'], ['desc']).forEach((_cg: ICountryGraph) => {
       if (_cg?.total > 0) {
-        total.push(_cg.total);
+        dataSets.cli.push(_cg.trmType.cli ?? 0);
+        dataSets.noCli.push(_cg.trmType['no-cli'] ?? 0);
+        dataSets.cc.push(_cg.trmType.cc ?? 0);
         // this.totalCalls += _cg.total;
         // percentage.push(_cg.percentage);
         countries.push(
@@ -87,114 +91,130 @@ export class SideBarComponent implements OnInit, OnDestroy {
 
     // setting height for chart js
     this.height = height;
-    this.changeGraph(total, countries);
+    this.changeGraph(dataSets, countries);
   }
 
   // open modal for creating new call records
   createCallRecordsModal() {
-    this.dialog.open(ImportFileModalComponent, {
+    this.dialog.open(ImportCallRecordsFileModalComponent, {
       width: '400px',
     });
   }
 
   // submitting graph data to chartjs options
-  private changeGraph(_total: number[], _countries: string[]): void {
+  private changeGraph(_dataSet, _countries: string[]): void {
+    const datasetIndexes = ['CLI', 'No-CLI', 'CC'];
     // chart options
-    (this.plugins = [ChartDataLabels.default]),
-      (this.horizontalOptions = {
-        mantainAspectRation: true,
-        // showing graph on y-axis
-        indexAxis: 'y',
-        plugins: {
-          // tooltip options
-          tooltip: {
-            enabled: true,
-            displayColors: false,
-            callbacks: {
-              label: (context) => {
-                const tooltipValuesObject = this.getTooltipValue(context.label);
-                const value: string[] = [];
-                value[0] =
-                  'Total: ' + tooltipValuesObject.total.toLocaleString();
-                value[1] = 'Country Code: ' + tooltipValuesObject.code;
+    this.plugins = [ChartDataLabels.default];
+    this.horizontalOptions = {
+      mantainAspectRation: true,
+      // showing graph on y-axis
+      indexAxis: 'y',
 
-                return value;
+      interaction: {
+        mode: 'point',
+        axis: 'xy',
+      },
+      plugins: {
+        // tooltip options
+        tooltip: {
+          enabled: true,
+          displayColors: false,
+          callbacks: {
+            label: (context, _second) => {
+              // const tooltipValuesObject = this.getTooltipValue(context.label);
+              // const value: string[] = [];
+              // value[0] = 'Total: ' + tooltipValuesObject.total.toLocaleString();
+              // value[1] = 'Country Code: ' + tooltipValuesObject.code;
+              return [datasetIndexes[context.datasetIndex], context.raw];
+            },
+          },
+        },
+        // labels: { render: 'value' },
+        legend: {
+          // y-axis title options
+          labels: {
+            font: { size: 40 },
+          },
+          // not showing the graph title
+          display: false,
+        },
+        // options for datalabels
+        datalabels: {
+          offset: 7,
+          align: 'end',
+          anchor: 'end',
+          borderRadius: 4,
+          // color: '',
+          // color: '#f99c47',
+          labels: {
+            title: {
+              font: {
+                size: 15,
+                weight: 'bold',
               },
             },
           },
-          // labels: { render: 'value' },
-          legend: {
-            // y-axis title options
-            labels: {
-              font: { size: 40 },
-            },
-            // not showing the graph title
+          formatter: function (value, data) {
+            if (data.datasetIndex != 2) {
+              return '';
+            }
+            return (
+              _dataSet.cli[data.dataIndex] +
+              _dataSet.noCli[data.dataIndex] +
+              _dataSet.cc[data.dataIndex]
+            );
+          },
+        },
+      },
+
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            // min: 0,
+            // max: 100, // Your absolute max value
+            // callback: function (value) {
+            //   return value + '%'; // convert it to percentage
+            // },
+            color: '#495057',
+          },
+          grid: {
             display: false,
+            color: '#ebedef',
           },
-          // options for datalabels
-          datalabels: {
-            offset: 7,
-            align: 'end',
-            anchor: 'end',
-            borderRadius: 4,
-            color: '#f99c47',
-            labels: {
-              title: {
-                font: {
-                  size: 15,
-                  weight: 'bold',
-                },
-              },
-            },
-            formatter: function (value) {
-              return value.toLocaleString();
-            },
+          scaleLabel: {
+            display: true,
+            labelString: 'Percentage',
           },
         },
-        scales: {
-          x: {
-            ticks: {
-              // min: 0,
-              // max: 100, // Your absolute max value
-              // callback: function (value) {
-              //   return value + '%'; // convert it to percentage
-              // },
-              color: '#495057',
-            },
-            grid: {
-              display: false,
-              color: '#ebedef',
-            },
-            scaleLabel: {
-              display: true,
-              labelString: 'Percentage',
-            },
-          },
-          y: {
-            ticks: {
-              font: { size: 15 },
-              color: '#495057',
-            },
-            grid: {
-              display: false,
-              color: '#ebedef',
-            },
-          },
-        },
+        y: {
+          stacked: true,
 
-        // click functions
-        onClick: (_data, event) => {
-          // getting active point
-          var activePoints = _data.chart.getElementsAtEventForMode(
-            _data.native,
-            'point',
-            event[0].element
-          );
-          this.exportEmitter.next(
-            _data.chart.data.labels[activePoints[0].index].toLowerCase()
-          );
+          ticks: {
+            font: { size: 15 },
+            color: '#495057',
+          },
+          grid: {
+            display: false,
+            color: '#ebedef',
+          },
         },
-      });
+      },
+
+      // click functions
+      onClick: (_data, event) => {
+        // getting active point
+        var activePoints = _data.chart.getElementsAtEventForMode(
+          _data.native,
+          'point',
+          event[0].element
+        );
+        this.exportEmitter.next(
+          _data.chart.data.labels[activePoints[0].index].toLowerCase()
+        );
+      },
+    };
 
     // chart data
     this.basicData = {
@@ -203,8 +223,19 @@ export class SideBarComponent implements OnInit, OnDestroy {
       // data showing on chart
       datasets: [
         {
-          backgroundColor: '#f99c47',
-          data: _total,
+          backgroundColor: '#9ad0f58a',
+          // backgroundColor: 'blue',
+          data: _dataSet.cli,
+        },
+        {
+          backgroundColor: '#f7c85380',
+          // backgroundColor: 'orange',
+          data: _dataSet.noCli,
+        },
+        {
+          backgroundColor: '#ffb1c194',
+          // backgroundColor: 'red',
+          data: _dataSet.cc,
         },
       ],
     };

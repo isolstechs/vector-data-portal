@@ -11,7 +11,7 @@ export class MessageService {
     _severity: 'error' | 'warn' | 'success',
     _messageContent: string,
     _buttonText: string = 'OK',
-    _durationSeconds: number = 3,
+    _durationSeconds: number = 5
   ): void {
     // this._snackBar.dismiss();
     this._snackBar.open(_messageContent, _buttonText, {
@@ -28,11 +28,7 @@ export class MessageService {
       'error',
       'Error! Please check your internet, refresh page and try again.',
       'OK',
-      15,
+      15
     );
-  }
-
-  private time(): number {
-    return 365 * 24 * 60 * 60;
   }
 }

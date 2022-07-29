@@ -18,6 +18,7 @@ import { IOperator } from '../interfaces/operator.interface';
 import * as _ from 'lodash';
 import { IPrefixList } from '../interfaces/prefix-list.interface';
 import { countryList } from './country-list';
+import * as sequelize from 'sequelize';
 
 @Injectable()
 export class HomeService {
@@ -30,8 +31,6 @@ export class HomeService {
 
   // for creating call records
   async create(_createCallrecords: ICallRecord[]) {
-    let promiseArray = [];
-    let count = 0;
     let callRecords: ICallRecord[] = [];
     let prefixObj = {};
     let prefixCodes = _createCallrecords.map(
@@ -50,7 +49,7 @@ export class HomeService {
     _createCallrecords.forEach((_ccr: ICallRecord) => {
       if (!prefixObj[_ccr.prefix as any]) {
         throw new NotImplementedException(
-          'Could not found given prefix! Prefix: ' + _ccr.prefix
+          `Prefix "${_ccr.prefix}" not found in database. Please upload prefix first and try again.`
         );
       }
       callRecords.push({
@@ -59,22 +58,68 @@ export class HomeService {
         date: _ccr.date,
         sessionTime: _ccr.sessionTime,
         prefixId: prefixObj[_ccr.prefix as any],
+        trmType: _ccr.trmType,
       });
     });
+    // for (let j = 0; j < 10000; j++) {
+    //   console.log(j);
 
     let i = 0;
+    let count = 0;
+
     while (count <= callRecords.length) {
-      promiseArray.push(
-        this._callRecordModel.bulkCreate(
-          callRecords.slice(count, (i + 1) * 10000) as any
-        )
+      await this._callRecordModel.bulkCreate(
+        callRecords.slice(count, (i + 1) * 10000) as any
       );
 
       count += 10000;
       ++i;
     }
+    // }
 
-    await Promise.all(promiseArray);
+    await this._callRecordModel.sequelize.query(
+      `
+      
+    DELETE  FROM
+    "call-records" a
+  	  USING "call-records" b
+  WHERE
+    a.id > b.id
+  AND a."prefixId" = b."prefixId"
+  AND a."aParty" = b."aParty"
+  AND a."bParty" = b."bParty"
+  AND a.date = b.date
+  AND a."sessionTime" = b."sessionTime"
+  AND a."trmType" = b."trmType"
+    
+      `
+
+      //   `DELETE a FROM \`call-records\` a
+      // INNER JOIN \`call-records\` b
+      // WHERE
+      //     a.id < b.id
+      //     AND a.aParty = b.aParty
+      //     AND a.bParty = b.bParty
+      //     AND a.date = b.date
+      //     AND a.sessionTime = b.sessionTime
+      //     AND a.trmType = b.trmType
+      //     AND a.prefixId = b.prefixId;`
+    );
+
+    //     await this._callRecordModel.sequelize.query(`
+    //     DELETE
+    // FROM
+    //     call-records a
+    //         USING call-records b
+    // WHERE
+    //     a.id < b.id
+    //     AND a.aParty = b.aParty
+    //     AND a.bParty = b.bParty
+    //     AND a.date = b.date
+    //     AND a.sessionTime = b.sessionTime
+    //     AND a.trmType = b.trmType
+    //     AND a.prefixId = b.prefixId
+    //     `);
   }
 
   // for finding call records
@@ -89,7 +134,14 @@ export class HomeService {
     try {
       callRecords = await this._callRecordModel.findAll({
         where,
-        attributes: ['aParty', 'bParty', 'date', 'sessionTime', 'prefixId'],
+        attributes: [
+          'aParty',
+          'bParty',
+          'date',
+          'sessionTime',
+          'prefixId',
+          'trmType',
+        ],
         // include: [
         //   {
         //     model: this._prefixModel,

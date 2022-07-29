@@ -32,6 +32,9 @@ export class CallRecordModel extends Model {
   @Column(DataType.STRING)
   sessionTime: string;
 
+  @Column(DataType.STRING)
+  trmType: string; // termination Type
+
   // relationship with PrefixModel
   @ForeignKey(() => PrefixModel)
   @Column({
