@@ -7,7 +7,7 @@ import { OperatorModel } from './model/operator.model';
 import { CallRecordModel } from './model/call-record.model';
 import { PrefixModel } from './model/prefix.model';
 
-let force = true; // <----------------- To Initialize Database
+let force = false; // <----------------- To Initialize Database
 let alter = false; // <----------------- To Initialize Database
 
 // force =
@@ -48,23 +48,18 @@ export const databaseProvider = [
         PrefixModel,
       ]);
 
-      await sequelize
-        .sync
-
-        // { force, alter }
-        ()
-        .then(async () => {
-          // if (force) {
-          //   await seed();
-          //   setTimeout(() => {
-          //     console.log('database created');
-          //   }, 500);
-          // } else if (alter) {
-          //   setTimeout(() => {
-          //     console.log('\nDB updated\n');
-          //   }, 500);
-          // }
-        });
+      await sequelize.sync({ force, alter }).then(async () => {
+        // if (force) {
+        //   await seed();
+        //   setTimeout(() => {
+        //     console.log('database created');
+        //   }, 500);
+        // } else if (alter) {
+        //   setTimeout(() => {
+        //     console.log('\nDB updated\n');
+        //   }, 500);
+        // }
+      });
       return sequelize;
     },
   },
