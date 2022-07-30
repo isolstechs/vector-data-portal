@@ -48,18 +48,23 @@ export const databaseProvider = [
         PrefixModel,
       ]);
 
-      await sequelize.sync({ force, alter }).then(async () => {
-        // if (force) {
-        //   await seed();
-        //   setTimeout(() => {
-        //     console.log('database created');
-        //   }, 500);
-        // } else if (alter) {
-        //   setTimeout(() => {
-        //     console.log('\nDB updated\n');
-        //   }, 500);
-        // }
-      });
+      await sequelize
+        .sync
+
+        // { force, alter }
+        ()
+        .then(async () => {
+          // if (force) {
+          //   await seed();
+          //   setTimeout(() => {
+          //     console.log('database created');
+          //   }, 500);
+          // } else if (alter) {
+          //   setTimeout(() => {
+          //     console.log('\nDB updated\n');
+          //   }, 500);
+          // }
+        });
       return sequelize;
     },
   },
