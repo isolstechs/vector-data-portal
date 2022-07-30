@@ -47,7 +47,6 @@
     "ngx-scrollbar": "^10.0.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
-    "pg-native": "^3.0.0",
     "primeicons": "^5.0.0",
     "primeng": "^14.0.0",
     "reflect-metadata": "^0.1.13",
