@@ -7,9 +7,17 @@ import { OperatorModel } from './model/operator.model';
 import { CallRecordModel } from './model/call-record.model';
 import { PrefixModel } from './model/prefix.model';
 
-const force: any = process.env['PROD_DB_FORCE'] ?? false; // <----------------- To Initialize Database
-const alter: any = process.env['PROD_DB_ALTER'] ?? false; // <----------------- To Alternate Database
+let force = false; // <----------------- To Initialize Database
+let alter = false; // <----------------- To Initialize Database
 
+force =
+  typeof process.env['PROD_DB_FORCE'] == 'string'
+    ? process.env['PROD_DB_FORCE'] == 'true'
+    : force;
+alter =
+  typeof process.env['PROD_DB_ALTER'] == 'string'
+    ? process.env['PROD_DB_ALTER'] == 'true'
+    : alter;
 export const databaseProvider = [
   {
     provide: SEQUELIZE,
