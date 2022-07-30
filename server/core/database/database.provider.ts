@@ -20,6 +20,7 @@ let alter = false; // <----------------- To Initialize Database
 //     : alter;
 
 // for production we have made force to false
+// can't use "NODE_ENV" == "production" because it is set to false after production commant
 if (process.env['PROD_DB_NAME']) {
   force = false;
 }
