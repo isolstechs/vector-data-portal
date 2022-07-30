@@ -7,7 +7,7 @@ import { OperatorModel } from './model/operator.model';
 import { CallRecordModel } from './model/call-record.model';
 import { PrefixModel } from './model/prefix.model';
 
-let force = false; // <----------------- To Initialize Database
+let force = true; // <----------------- To Initialize Database
 let alter = false; // <----------------- To Initialize Database
 
 // force =
@@ -20,7 +20,7 @@ let alter = false; // <----------------- To Initialize Database
 //     : alter;
 
 // for production we have made force to false
-if (process.env['NODE_ENV'] == 'production') {
+if (process.env['PROD_DB_NAME']) {
   force = false;
 }
 
