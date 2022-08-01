@@ -6,7 +6,6 @@ import { HomeService } from '../../../home/services/home.service';
 import { ICallRecord } from '../../../interfaces/call-record.interface';
 import { MessageService } from '../../../services/core/message.service';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { _supportsShadowDom } from '@angular/cdk/platform';
 
 @Component({
   selector: 'app-import-call-records-file-modal',
@@ -179,7 +178,7 @@ export class ImportCallRecordsFileModalComponent implements OnInit {
 
             // if we did not have year in start, we will generate error message
             if (_cl.date[4] != '/' || parseInt(_cl.date.slice(4, 7)) > 12) {
-              console.log(parseInt(_cl.date.slice(0, 2)));
+              console.log(parseInt(_cl.date.slice(0, 4)));
 
               this._messageService.raiseMessage(
                 'error',
@@ -196,12 +195,12 @@ export class ImportCallRecordsFileModalComponent implements OnInit {
 
             // checking two digits for month available or not
             if (_cl.date[6] == '/') {
-              _cl.date = _cl.date.slice(0, 3) + '0' + _cl.date.slice(3);
+              _cl.date = _cl.date.slice(0, 5) + '0' + _cl.date.slice(5);
             }
 
             // checking two digits for day available or not
             if (_cl.date[8] == ' ') {
-              _cl.date = _cl.date.slice(0, 6) + '0' + _cl.date.slice(6);
+              _cl.date = _cl.date.slice(0, 7) + '0' + _cl.date.slice(7);
             }
 
             // checking two digits for hour available or not
