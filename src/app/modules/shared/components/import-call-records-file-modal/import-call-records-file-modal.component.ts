@@ -6,6 +6,7 @@ import { HomeService } from '../../../home/services/home.service';
 import { ICallRecord } from '../../../interfaces/call-record.interface';
 import { MessageService } from '../../../services/core/message.service';
 import * as XLSX from 'xlsx/xlsx.mjs';
+import { _supportsShadowDom } from '@angular/cdk/platform';
 
 @Component({
   selector: 'app-import-call-records-file-modal',
@@ -176,8 +177,8 @@ export class ImportCallRecordsFileModalComponent implements OnInit {
           if (_cl.date) {
             _cl.date = _cl.date.trim().replace('  ', ' ');
 
-            // if we have a month in start, we will generate error message
-            if (parseInt(_cl.date.slice(0, 2)) > 12) {
+            // if we did not have year in start, we will generate error message
+            if (_cl.date[4] != '/' || parseInt(_cl.date.slice(4, 7)) > 12) {
               console.log(parseInt(_cl.date.slice(0, 2)));
 
               this._messageService.raiseMessage(
@@ -185,26 +186,22 @@ export class ImportCallRecordsFileModalComponent implements OnInit {
                 'Invalid date found on row ' +
                   i +
                   1 +
-                  '. Provided date should be in "MM/DD/YYYY HH:mm" format.',
+                  '. Provided date should be in "YYYY/MM/DD HH:mm" format.',
                 'OK',
                 20
               );
               this.isLoading = false;
               return;
             }
-            // checking two digits for month available or not
-            if (_cl.date[1] == '/') {
-              _cl.date = '0' + _cl.date;
-            }
 
-            // checking two digits for day available or not
-            if (_cl.date[4] == '/') {
+            // checking two digits for month available or not
+            if (_cl.date[6] == '/') {
               _cl.date = _cl.date.slice(0, 3) + '0' + _cl.date.slice(3);
             }
 
-            // checking four digits for year available or not
+            // checking two digits for day available or not
             if (_cl.date[8] == ' ') {
-              _cl.date = _cl.date.slice(0, 6) + '20' + _cl.date.slice(6);
+              _cl.date = _cl.date.slice(0, 6) + '0' + _cl.date.slice(6);
             }
 
             // checking two digits for hour available or not

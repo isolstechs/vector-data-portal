@@ -79,7 +79,7 @@ export class HomeService {
 
     await this._callRecordModel.sequelize.query(
       `
-      
+
     DELETE  FROM
     "call-records" a
   	  USING "call-records" b
@@ -91,7 +91,7 @@ export class HomeService {
   AND a.date = b.date
   AND a."sessionTime" = b."sessionTime"
   AND a."trmType" = b."trmType"
-    
+
       `
 
       //   `DELETE a FROM \`call-records\` a
@@ -256,14 +256,25 @@ export class HomeService {
     // });
 
     const prefixesToBeSaved = [];
+    const prefixArray = [];
     _prefixData.forEach((_p) => {
-      prefixesToBeSaved.push({
+      prefixArray.push({
         prefix: _p.prefix,
         countryId: countriesObj[_p.country][0]?.id,
         operatorId: operatorsObj[_p.operator][0]?.id,
       });
     });
 
-    await PrefixModel.bulkCreate(prefixesToBeSaved);
+    let i = 0;
+    let count = 0;
+
+    while (count <= prefixArray.length) {
+      await this._prefixModel.bulkCreate(
+        prefixArray.slice(count, (i + 1) * 10000) as any
+      );
+
+      count += 10000;
+      ++i;
+    }
   }
 }

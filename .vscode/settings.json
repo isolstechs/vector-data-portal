@@ -28,6 +28,6 @@
     "**/Thumbs.db": true,
     "node_modules": true,
     "src": true,
-    // "dist": true
+    "dist": true
   }
 }
