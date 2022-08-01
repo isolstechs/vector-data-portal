@@ -262,8 +262,9 @@ export class HomeService {
     // });
 
     const prefixesToBeSaved = [];
+    const prefixArray = [];
     _prefixData.forEach((_p) => {
-      prefixesToBeSaved.push({
+      prefixArray.push({
         prefix: _p.prefix,
         countryId: countriesObj[_p.country][0]?.id,
         operatorId: operatorsObj[_p.operator][0]?.id,
