@@ -3,6 +3,9 @@ import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 
+// import * as pg from 'pg';
+// delete (<any>pg).native;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 

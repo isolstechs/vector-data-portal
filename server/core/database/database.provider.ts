@@ -7,7 +7,7 @@ import { OperatorModel } from './model/operator.model';
 import { CallRecordModel } from './model/call-record.model';
 import { PrefixModel } from './model/prefix.model';
 
-let force = true; // <----------------- To Initialize Database
+let force = false; // <----------------- To Initialize Database
 let alter = false; // <----------------- To Initialize Database
 
 // force =
@@ -25,6 +25,8 @@ if (process.env['PROD_DB_NAME']) {
   force = false;
 }
 
+// workaround to remove error "Error: Module not found: Error: Can't resolve 'pg-native'"
+// delete pg.native;
 export const databaseProvider = [
   {
     provide: SEQUELIZE,
@@ -32,6 +34,7 @@ export const databaseProvider = [
       const sequelize = new Sequelize({
         database: process.env['PROD_DB_NAME'] || 'vector-data-portal',
         dialect: 'postgres',
+        // native: false, // workaround to remove error "Error: Module not found: Error: Can't resolve 'pg-native'"
         username: process.env['PROD_USER_NAME'] || 'postgres',
         password: process.env['PROD_DB_PASSWORD'] || 'root',
         host: 'localhost',

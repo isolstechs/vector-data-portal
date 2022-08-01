@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 import { IPrefixList } from '../interfaces/prefix-list.interface';
 import { countryList } from './country-list';
 import * as sequelize from 'sequelize';
+import * as moment from 'moment';
 
 @Injectable()
 export class HomeService {
@@ -46,20 +47,25 @@ export class HomeService {
     // saving prefixes as object
     prefixes.forEach((_p: IPrefix) => (prefixObj[_p.prefix] = _p.id));
 
-    _createCallrecords.forEach((_ccr: ICallRecord) => {
+    _createCallrecords.forEach((_ccr: ICallRecord, _i) => {
       if (!prefixObj[_ccr.prefix as any]) {
         throw new NotImplementedException(
           `Prefix "${_ccr.prefix}" not found in database. Please upload prefix first and try again.`
         );
       }
-      callRecords.push({
-        aParty: _ccr.aParty,
-        bParty: _ccr.bParty,
-        date: _ccr.date,
-        sessionTime: _ccr.sessionTime,
-        prefixId: prefixObj[_ccr.prefix as any],
-        trmType: _ccr.trmType,
-      });
+
+      try {
+        callRecords.push({
+          aParty: _ccr.aParty,
+          bParty: _ccr.bParty,
+          date: moment(_ccr.date).format('YYYY-MM-DDTHH:mm:ss') + '.000Z',
+          sessionTime: _ccr.sessionTime,
+          prefixId: prefixObj[_ccr.prefix as any],
+          trmType: _ccr.trmType,
+        });
+      } catch (error) {
+        throw new NotImplementedException(`Invalid date at row "${i + 1}"`);
+      }
     });
     // for (let j = 0; j < 10000; j++) {
     //   console.log(j);
@@ -77,34 +83,34 @@ export class HomeService {
     }
     // }
 
-    await this._callRecordModel.sequelize.query(
-      `
-      
-    DELETE  FROM
-    "call-records" a
-  	  USING "call-records" b
-  WHERE
-    a.id > b.id
-  AND a."prefixId" = b."prefixId"
-  AND a."aParty" = b."aParty"
-  AND a."bParty" = b."bParty"
-  AND a.date = b.date
-  AND a."sessionTime" = b."sessionTime"
-  AND a."trmType" = b."trmType"
-    
-      `
+    //   await this._callRecordModel.sequelize.query(
+    //     `
 
-      //   `DELETE a FROM \`call-records\` a
-      // INNER JOIN \`call-records\` b
-      // WHERE
-      //     a.id < b.id
-      //     AND a.aParty = b.aParty
-      //     AND a.bParty = b.bParty
-      //     AND a.date = b.date
-      //     AND a.sessionTime = b.sessionTime
-      //     AND a.trmType = b.trmType
-      //     AND a.prefixId = b.prefixId;`
-    );
+    //   DELETE  FROM
+    //   "call-records" a
+    // 	  USING "call-records" b
+    // WHERE
+    //   a.id > b.id
+    // AND a."prefixId" = b."prefixId"
+    // AND a."aParty" = b."aParty"
+    // AND a."bParty" = b."bParty"
+    // AND a.date = b.date
+    // AND a."sessionTime" = b."sessionTime"
+    // AND a."trmType" = b."trmType"
+
+    //     `
+
+    //   `DELETE a FROM \`call-records\` a
+    // INNER JOIN \`call-records\` b
+    // WHERE
+    //     a.id < b.id
+    //     AND a.aParty = b.aParty
+    //     AND a.bParty = b.bParty
+    //     AND a.date = b.date
+    //     AND a.sessionTime = b.sessionTime
+    //     AND a.trmType = b.trmType
+    //     AND a.prefixId = b.prefixId;`
+    // );
 
     //     await this._callRecordModel.sequelize.query(`
     //     DELETE
@@ -264,6 +270,16 @@ export class HomeService {
       });
     });
 
-    await PrefixModel.bulkCreate(prefixesToBeSaved);
+    let i = 0;
+    let count = 0;
+
+    while (count <= prefixesToBeSaved.length) {
+      await PrefixModel.bulkCreate(
+        prefixesToBeSaved.slice(count, (i + 1) * 10000) as any
+      );
+
+      count += 10000;
+      ++i;
+    }
   }
 }

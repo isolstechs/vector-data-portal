@@ -6,6 +6,7 @@ import { HomeService } from '../../../home/services/home.service';
 import { ICallRecord } from '../../../interfaces/call-record.interface';
 import { MessageService } from '../../../services/core/message.service';
 import * as XLSX from 'xlsx/xlsx.mjs';
+import { ImportCallRecordsFileModalDateHelpers } from './import-call-records-file-modal-date-helpers';
 
 @Component({
   selector: 'app-import-call-records-file-modal',
@@ -169,62 +170,30 @@ export class ImportCallRecordsFileModalComponent implements OnInit {
         this.callRecords = results.data;
 
         // changing date to Date format
-
         for (let i = 0; i < this.callRecords.length; i++) {
           const _cl: ICallRecord = this.callRecords[i];
 
           if (_cl.date) {
-            _cl.date = _cl.date.trim().replace('  ', ' ');
-
-            // if we have a month in start, we will generate error message
-            if (parseInt(_cl.date.slice(0, 2)) > 12) {
-              console.log(parseInt(_cl.date.slice(0, 2)));
-
+            try {
+              _cl.date = ImportCallRecordsFileModalDateHelpers.initDate(
+                _cl.date
+              );
+            } catch (error) {
+              console.log(error);
               this._messageService.raiseMessage(
                 'error',
                 'Invalid date found on row ' +
-                  i +
-                  1 +
-                  '. Provided date should be in "MM/DD/YYYY HH:mm" format.',
+                  (i + 1) +
+                  '. Provided date should be in "MM/DD/YYYY HH:mm" or "YYYY/MM/DD HH:mm" format.',
                 'OK',
                 20
               );
               this.isLoading = false;
               return;
             }
-            // checking two digits for month available or not
-            if (_cl.date[1] == '/') {
-              _cl.date = '0' + _cl.date;
-            }
-
-            // checking two digits for day available or not
-            if (_cl.date[4] == '/') {
-              _cl.date = _cl.date.slice(0, 3) + '0' + _cl.date.slice(3);
-            }
-
-            // checking four digits for year available or not
-            if (_cl.date[8] == ' ') {
-              _cl.date = _cl.date.slice(0, 6) + '20' + _cl.date.slice(6);
-            }
-
-            // checking two digits for hour available or not
-            if (_cl.date.slice(13, 14) != ':') {
-              _cl.date = _cl.date.slice(0, 11) + '0' + _cl.date.slice(11);
-            }
-
-            _cl.date =
-              _cl.date.slice(6, 10) +
-              '-' +
-              _cl.date.slice(0, 2) +
-              '-' +
-              _cl.date.slice(3, 5) +
-              'T' +
-              _cl.date.slice(11, _cl.date.length) +
-              ':00.000Z';
-
-            _cl.trmType = _cl.trmType?.toLowerCase();
-            // _cl.date = new Date(_cl.date) as any;
           }
+
+          _cl.trmType = _cl.trmType?.toLowerCase();
         }
 
         console.log(this.callRecords);

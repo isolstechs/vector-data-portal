@@ -15,6 +15,7 @@ import {
 import { MatDateRangePicker } from '@angular/material/datepicker';
 import { DateRangeCalendarHeaderComponent } from './date-range-calendar-header/date-range-calendar-header.component';
 
+import * as moment from 'moment';
 @Component({
   selector: 'app-date-range-calendar',
   templateUrl: './date-range-calendar.component.html',
@@ -41,8 +42,8 @@ export class DateRangeCalendarComponent implements OnInit {
   }
 
   applyDateRange(): void {
-    const tStartDate = this.rangeForm.value.end?.format('YYYY-MM-DD');
-    const tEndDate = this.rangeForm.value.start?.format('YYYY-MM-DD');
+    const tStartDate = moment(this.rangeForm.value.start)?.format('YYYY-MM-DD');
+    const tEndDate = moment(this.rangeForm.value.end)?.format('YYYY-MM-DD');
     this.dateRangeCalendarEmitter.emit({
       startDate: tStartDate ? tStartDate : null,
       endDate: tEndDate ? tEndDate : null,

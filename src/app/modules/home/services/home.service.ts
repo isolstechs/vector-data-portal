@@ -5,6 +5,8 @@ import { IDate } from '../../interfaces/date.interaface';
 import { IPrefixList } from '../../interfaces/prefix-list.interface';
 import { HomeApiService } from './home-api.service';
 
+import * as _ from 'lodash';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -31,6 +33,17 @@ export class HomeService {
     return this._homeApiService.getCallrecords(_date).pipe(
       tap((_callRecords: ICallRecord[]) => {
         if (_callRecords.length) {
+          debugger;
+          _callRecords = _.uniqWith(
+            _callRecords,
+            (_recordA, _recordB) =>
+              _recordA.aParty == _recordB.aParty &&
+              _recordA.bParty == _recordB.bParty &&
+              _recordA.date == _recordB.date &&
+              _recordA.sessionTime == _recordB.sessionTime &&
+              _recordA.trmType == _recordB.trmType &&
+              _recordA.prefixId == _recordB.prefixId
+          );
           this.callRecordsSubject.next(_callRecords);
         }
       })

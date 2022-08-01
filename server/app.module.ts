@@ -7,6 +7,9 @@ import { AppProviders } from './app.provider';
 import { AppService } from './app.service';
 import { DatabaseModule } from './core/database/database.module';
 import { HomeModule } from './modules/home/home.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './tasks.service';
+import { HomeProviders } from './modules/home/home.provider';
 
 @Module({
   imports: [
@@ -16,8 +19,9 @@ import { HomeModule } from './modules/home/home.module';
     }),
     DatabaseModule,
     HomeModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, ...AppProviders],
+  providers: [AppService, TasksService, ...AppProviders, ...HomeProviders],
 })
 export class AppModule {}

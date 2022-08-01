@@ -8,6 +8,7 @@ import { SharedService } from '../shared/services/shared.service';
 import { HomeService } from './services/home.service';
 import { SideBarComponent } from './side-bar/side-bar.component';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { WorldMapComponent } from './world-map/world-map.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ExportFileModalComponent } from '../shared/components/export-file-modal/export-file-modal.component';
@@ -264,39 +265,41 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // showing differnce between start and end date
   private calcDate(date1: Date, date2: Date) {
-    const d = new Date().setHours(0, 0, 0, 0);
-    if (d == _.cloneDeep(date1).setHours(0, 0, 0, 0)) {
-      this.difference = 'Today';
-      return;
-    }
+    // const d = new Date().setHours(0, 0, 0, 0);
+    // if (d == _.cloneDeep(date1).setHours(0, 0, 0, 0)) {
+    //   this.difference = 'Today';
+    //   return;
+    // }
 
-    let message: string;
-    var diff = Math.floor(date2.getTime() - date1.getTime());
-    var day = 1000 * 60 * 60 * 24;
+    // let message: string;
+    // var diff = Math.floor(date2.getTime() - date1.getTime());
+    // var day = 1000 * 60 * 60 * 24;
+    // debugger;
+    // let days = Math.floor(diff / day) + 1;
+    // let months = Math.floor(days / 30);
+    // const years = Math.floor(months / 12);
 
-    let days = Math.floor(diff / day) + 1;
-    let months = Math.floor(days / 30);
-    const years = Math.floor(months / 12);
+    // // subtracting years from total months, months from total days
+    // months =
+    //   years > 0
+    //     ? parseInt((months / 12).toString().split('.')[1]) * 12
+    //     : months;
+    // days =
+    //   months > 0 ? parseInt((days / 30).toString().split('.')[1]) * 30 : days;
 
-    // subtracting years from total months, months from total days
-    months =
-      years > 0
-        ? parseInt((months / 12).toString().split('.')[1]) * 12
-        : months;
-    days =
-      months > 0 ? parseInt((days / 30).toString().split('.')[1]) * 30 : days;
+    // if (years == 1 && !months) {
+    //   days = 0;
+    // }
 
-    if (years == 1 && !months) {
-      days = 0;
-    }
+    // // managing string according to given years, months and days
+    // message =
+    //   years > 0 ? (years > 1 ? years + ' Years ' : years + ' Year ') : '';
+    // message +=
+    //   months > 0 ? (months > 1 ? months + ' Months ' : months + ' Month ') : '';
+    // message += days > 0 ? (days > 1 ? days + ' Days' : days + ' Day') : '';
 
-    // managing string according to given years, months and days
-    message =
-      years > 0 ? (years > 1 ? years + ' Years ' : years + ' Year ') : '';
-    message +=
-      months > 0 ? (months > 1 ? months + ' Months ' : months + ' Month ') : '';
-    message += days > 0 ? (days > 1 ? days + ' Days' : days + ' Day') : '';
+    // this.difference = message;
 
-    this.difference = message;
+    this.difference = moment(date1).to(moment(date2), true);
   }
 }
