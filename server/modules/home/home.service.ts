@@ -261,7 +261,6 @@ export class HomeService {
     //   countriesObj[_country?.dataValues.name] = _country?.dataValues.id;
     // });
 
-    const prefixesToBeSaved = [];
     const prefixArray = [];
     _prefixData.forEach((_p) => {
       prefixArray.push({
@@ -274,9 +273,9 @@ export class HomeService {
     let i = 0;
     let count = 0;
 
-    while (count <= prefixesToBeSaved.length) {
+    while (count <= prefixArray.length) {
       await PrefixModel.bulkCreate(
-        prefixesToBeSaved.slice(count, (i + 1) * 10000) as any
+        prefixArray.slice(count, (i + 1) * 10000) as any
       );
 
       count += 10000;

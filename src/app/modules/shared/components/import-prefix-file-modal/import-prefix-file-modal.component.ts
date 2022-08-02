@@ -144,9 +144,9 @@ export class ImportPrefixFileModalComponent implements OnInit {
           return;
         }
 
-        _.remove(results.data, (p: IPrefixList) => {
-          return p.country.toLowerCase() == p.operator.toLowerCase();
-        });
+        // _.remove(results.data, (p: IPrefixList) => {
+        //   return p.country.toLowerCase() == p.operator.toLowerCase();
+        // });
 
         results.data = _.uniqBy(results.data, 'prefix');
         this.prefixes = results.data;
