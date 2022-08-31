@@ -210,7 +210,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
 
         this.callRecords = _.orderBy(_callRecords, 'date', 'desc');
-        console.log(this.callRecords);
         this.changeCallRecordsToGraphData();
         this.isLoading = false;
       });

@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MyMessageService } from './my-message.service';
+import { isPlatformBrowser } from '@angular/common';
 // import { AuthService } from '../auth/services/auth.service';
 // import * as path from "path";
 // import { type } from "os";
@@ -13,12 +14,16 @@ import { MyMessageService } from './my-message.service';
 })
 export class ApiService {
   // authService: any;
+  private isBrowser: boolean = false;
 
   constructor(
     private http: HttpClient,
     private _myMessageService: MyMessageService,
-    private _router: Router // private inj: Injector
-  ) {}
+    private _router: Router, // private inj: Injector
+    @Inject(PLATFORM_ID) private platformId: any
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   public request(
     method: 'post' | 'get' | 'put' | 'delete',
@@ -50,22 +55,26 @@ export class ApiService {
     }
     const request = base.pipe(
       map((data) => {
-        console.log(
-          '%capi.service %csuccess',
-          'color: black; background: yellow; padding: 2px; border-radius: 2px;',
-          'color: white; background: blue; padding: 2px; border-radius: 2px;',
-          data
-        );
+        if (this.isBrowser) {
+          console.log(
+            '%capi.service %csuccess',
+            'color: black; background: yellow; padding: 2px; border-radius: 2px;',
+            'color: white; background: blue; padding: 2px; border-radius: 2px;',
+            data
+          );
+        }
         return data;
       }),
       catchError((err) => {
-        console.log(err);
-        console.log(
-          '%capi.service %cError',
-          'color: black; background: yellow; padding: 2px; border-radius: 2px;',
-          'color: white; background: red; padding: 2px; border-radius: 2px;',
-          err
-        );
+        if (this.isBrowser) {
+          console.log(err);
+          console.log(
+            '%capi.service %cError',
+            'color: black; background: yellow; padding: 2px; border-radius: 2px;',
+            'color: white; background: red; padding: 2px; border-radius: 2px;',
+            err
+          );
+        }
 
         if (err && err.statusText === 'Unauthorized') {
           // if token expired on webserver

@@ -8,7 +8,6 @@ export class ShowTooltipWhenEllipsisActiveDirective implements AfterViewInit {
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      console.log('in ellipsis directive');
       const element = this.elementRef.nativeElement;
       if (element.offsetWidth < element.scrollWidth) {
         element.title = element.innerHTML;
